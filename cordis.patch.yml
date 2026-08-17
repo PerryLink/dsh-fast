@@ -1,0 +1,42 @@
+# dsh-fast bundle patch: mount the read-only performance diagnostics.
+#
+# Every key below is a Config field (Schemastery schema); invalid values fail
+# the profile load loudly. See README.md "Configuration" for the full table.
+# The plugin is read-only and safe, so it defaults to enabled.
+- insert:
+    - id: dsh-fast
+      name: dsh-fast
+      config:
+        # Master switch. On by default (read-only diagnostics); `false` mounts
+        # nothing at all.
+        enabled: true
+        # Privacy: include the sanitized session working directory in /fast and
+        # fast_report. Off by default — a local path is sensitive.
+        privacy:
+          includeCwd: false
+        # Async sampling policy (runs off the model path on a timer).
+        sampling:
+          # How often active sessions are sampled, in milliseconds.
+          snapshotIntervalMs: 60000
+          # How many samples to retain per session in the durable domain history.
+          maxHistorySamples: 20
+        # Suggestion thresholds (tokens / ratios / counts). A value crossing a
+        # threshold adds one optimization note to /fast and fast_report.
+        thresholds:
+          # Warn when the assembled system prompt (AGENTS.md + skills + persona)
+          # exceeds this many tokens.
+          systemPromptTokens: 20000
+          # Warn when the tool schema exceeds this many tokens.
+          toolSchemaTokens: 8000
+          # Warn when the conversation surface exceeds this many tokens.
+          surfaceTokens: 60000
+          # Warn when the LLM cache hit rate falls below this (0..1).
+          cacheHitRateFloor: 0.1
+          # Warn once the session has triggered this many compactions.
+          compactionCountWarn: 10
+          # Warn when the average shadowed token count per summary exceeds this.
+          compactionShadowTokens: 40000
+        # Spill detection: detect spilled tool results from the durable
+        # spill-notice marker (best-effort heuristic; see README).
+        spill:
+          detectSpilledResults: true
