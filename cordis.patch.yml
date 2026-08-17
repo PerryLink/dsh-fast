@@ -4,6 +4,19 @@
 # the profile load loudly. See README.md "Configuration" for the full table.
 # The plugin is read-only and safe, so it defaults to enabled.
 - insert:
+    - id: storage
+      name: '@deepseek-ai/dsh-storage'
+
+    - id: storage-json
+      name: '@deepseek-ai/dsh-storage-json'
+      config:
+        root: !!js dshHomePath('storages')
+
+    - id: storage-domain
+      name: '@deepseek-ai/dsh-storage-domain'
+      config:
+        backend: json
+
     - id: dsh-fast
       name: dsh-fast
       config:
