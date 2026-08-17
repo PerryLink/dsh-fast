@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "Read-only performance diagnostics for DeepSeek Harness: session load (open/restore) timing, spill-hit counts, compaction count and trigger, context-injection volume (AGENTS.md/skills/tool-schema token share), and LLM cache hit rate — surfaced via the /fast command and the fast_report tool, persisted as reconstructable fast/* session events with async sampling off the model path.",
   "author": "dsh-fast contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PerryLink/dsh-fast.git"
+  },
+  "homepage": "https://github.com/PerryLink/dsh-fast#readme",
+  "bugs": {
+    "url": "https://github.com/PerryLink/dsh-fast/issues"
+  },
   "private": false,
   "type": "module",
   "main": "./lib/index.js",
