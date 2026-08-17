@@ -1,6 +1,24 @@
-# dsh-fast
+<div align="center">
 
-Read-only performance diagnostics for DeepSeek Harness. `dsh-fast` observes the session event stream — never the model hot path — and reports where your session's latency and context budget actually go: session load (open/restore) timing, spill-hit counts, compaction count and trigger, context-injection volume (AGENTS.md / skill directory / tool schema / surface token share), and the LLM cache hit rate. It surfaces those as the `/fast` slash command and the `fast_report` model tool, and persists them to the harness storage domain on an async sampling timer.
+# ⚡ dsh-fast
+
+**Read-only performance diagnostics for DeepSeek Harness.**
+
+*Observes the session event stream — never the model hot path — and reports where latency and context budget actually go.*
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![DSH plugin](https://img.shields.io/badge/dsh-plugin-✅-green)](https://github.com/topics/dsh-plugin)
+[![Node](https://img.shields.io/badge/node-%5E22.19%20%7C%7C%20%3E%3D24-brightgreen.svg)](#)
+[![CI](https://img.shields.io/github/actions/workflow/status/PerryLink/dsh-fast/ci.yml?branch=main&label=CI)](https://github.com/PerryLink/dsh-fast/actions)
+[![Version](https://img.shields.io/github/v/tag/PerryLink/dsh-fast?label=version)](https://github.com/PerryLink/dsh-fast/releases)
+[![npm version](https://img.shields.io/npm/v/dsh-fast)](https://www.npmjs.com/package/dsh-fast)
+[![npm downloads](https://img.shields.io/npm/dm/dsh-fast)](https://www.npmjs.com/package/dsh-fast)
+
+[English](README.md) · [简体中文](README.zh.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
+
+</div>
+
+---
 
 ## Compatibility
 

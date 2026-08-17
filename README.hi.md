@@ -1,6 +1,24 @@
-# dsh-fast
+<div align="center">
 
-DeepSeek Harness के लिए केवल-पठन प्रदर्शन निदान। `dsh-fast` सत्र घटना-धारा का अवलोकन करता है — मॉडल के हॉट पाथ को कभी नहीं — और बताता है कि आपके सत्र की विलंबता और संदर्भ बजट कहाँ जा रहा है: सत्र लोड (खोलना/पुनर्स्थापित करना) समय, spill हिट गणना, compaction गणना और कारण, इंजेक्ट किए गए संदर्भ की मात्रा (AGENTS.md / skills निर्देशिका / टूल schema / सतह, टोकन में) और LLM कैश हिट दर। यह इसे `/fast` स्लैश कमांड और `fast_report` मॉडल टूल के रूप में प्रस्तुत करता है, और अतुल्यकालिक नमूना टाइमर पर harness के स्टोरेज डोमेन में सहेजता है।
+# ⚡ dsh-fast
+
+**DeepSeek Harness के लिए केवल-पठन प्रदर्शन निदान।**
+
+*सत्र घटना-धारा का अवलोकन करता है — मॉडल के हॉट पाथ को कभी नहीं — और बताता है कि विलंबता और संदर्भ बजट कहाँ जा रहा है।*
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![DSH plugin](https://img.shields.io/badge/dsh-plugin-✅-green)](https://github.com/topics/dsh-plugin)
+[![Node](https://img.shields.io/badge/node-%5E22.19%20%7C%7C%20%3E%3D24-brightgreen.svg)](#)
+[![CI](https://img.shields.io/github/actions/workflow/status/PerryLink/dsh-fast/ci.yml?branch=main&label=CI)](https://github.com/PerryLink/dsh-fast/actions)
+[![Version](https://img.shields.io/github/v/tag/PerryLink/dsh-fast?label=version)](https://github.com/PerryLink/dsh-fast/releases)
+[![npm version](https://img.shields.io/npm/v/dsh-fast)](https://www.npmjs.com/package/dsh-fast)
+[![npm downloads](https://img.shields.io/npm/dm/dsh-fast)](https://www.npmjs.com/package/dsh-fast)
+
+[English](README.md) · [简体中文](README.zh.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
+
+</div>
+
+---
 
 ## Compatibility
 

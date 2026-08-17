@@ -1,6 +1,24 @@
-# dsh-fast
+<div align="center">
 
-Diagnóstico de desempenho somente leitura para DeepSeek Harness. O `dsh-fast` observa o fluxo de eventos da sessão — nunca o caminho quente do modelo — e informa para onde vão a latência e o orçamento de contexto da sua sessão: tempo de carga (abrir/restaurar), contagem de acertos de spill, contagem e motivo de compaction, volume de contexto injetado (AGENTS.md / diretório de skills / schema de ferramentas / superfície, em tokens) e taxa de acertos do cache LLM. Ele expõe isso como o comando `/fast` e a ferramenta `fast_report`, e persiste no domínio de armazenamento do harness em um timer de amostragem assíncrona.
+# ⚡ dsh-fast
+
+**Diagnóstico de desempenho somente leitura para DeepSeek Harness.**
+
+*Observa o fluxo de eventos da sessão — nunca o caminho quente do modelo — e informa para onde vão a latência e o orçamento de contexto.*
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![DSH plugin](https://img.shields.io/badge/dsh-plugin-✅-green)](https://github.com/topics/dsh-plugin)
+[![Node](https://img.shields.io/badge/node-%5E22.19%20%7C%7C%20%3E%3D24-brightgreen.svg)](#)
+[![CI](https://img.shields.io/github/actions/workflow/status/PerryLink/dsh-fast/ci.yml?branch=main&label=CI)](https://github.com/PerryLink/dsh-fast/actions)
+[![Version](https://img.shields.io/github/v/tag/PerryLink/dsh-fast?label=version)](https://github.com/PerryLink/dsh-fast/releases)
+[![npm version](https://img.shields.io/npm/v/dsh-fast)](https://www.npmjs.com/package/dsh-fast)
+[![npm downloads](https://img.shields.io/npm/dm/dsh-fast)](https://www.npmjs.com/package/dsh-fast)
+
+[English](README.md) · [简体中文](README.zh.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
+
+</div>
+
+---
 
 ## Compatibility
 

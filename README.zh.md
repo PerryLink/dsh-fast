@@ -1,6 +1,24 @@
-# dsh-fast
+<div align="center">
 
-DeepSeek Harness 的只读性能诊断插件。`dsh-fast` 观察会话事件流——绝不触碰模型热路径——并告诉你会话的延迟与上下文预算究竟花在哪里：会话加载（打开/恢复）耗时、spill 命中统计、compaction 次数与触发原因、上下文注入体量（AGENTS.md / 技能目录 / 工具 schema / 会话表面的 token 占比）、以及 LLM 缓存命中率。它通过 `/fast` 斜杠命令与 `fast_report` 模型工具呈现结果，并在异步采样定时器上把度量持久化到 harness 的存储域。
+# ⚡ dsh-fast
+
+**DeepSeek Harness 的只读性能诊断插件。**
+
+*观察会话事件流——绝不触碰模型热路径——并报告延迟与上下文预算究竟花在哪里。*
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![DSH plugin](https://img.shields.io/badge/dsh-plugin-✅-green)](https://github.com/topics/dsh-plugin)
+[![Node](https://img.shields.io/badge/node-%5E22.19%20%7C%7C%20%3E%3D24-brightgreen.svg)](#)
+[![CI](https://img.shields.io/github/actions/workflow/status/PerryLink/dsh-fast/ci.yml?branch=main&label=CI)](https://github.com/PerryLink/dsh-fast/actions)
+[![Version](https://img.shields.io/github/v/tag/PerryLink/dsh-fast?label=version)](https://github.com/PerryLink/dsh-fast/releases)
+[![npm version](https://img.shields.io/npm/v/dsh-fast)](https://www.npmjs.com/package/dsh-fast)
+[![npm downloads](https://img.shields.io/npm/dm/dsh-fast)](https://www.npmjs.com/package/dsh-fast)
+
+[English](README.md) · [简体中文](README.zh.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
+
+</div>
+
+---
 
 ## Compatibility
 
