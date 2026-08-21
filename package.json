@@ -1,6 +1,6 @@
 {
   "name": "dsh-fast",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Read-only performance diagnostics for DeepSeek Harness: session load (open/restore) timing, spill-hit counts, compaction count and trigger, context-injection volume (AGENTS.md/skills/tool-schema token share), and LLM cache hit rate — surfaced via the /fast command and the fast_report tool, persisted as reconstructable fast/* session events with async sampling off the model path.",
   "author": "dsh-fast contributors",
   "repository": {
@@ -65,7 +65,7 @@
     ],
     "compatibility": {
       "dshVersions": [
-        "0.1.0-rc.6"
+        "0.1.0-rc.8"
       ]
     },
     "capability": {
@@ -99,13 +99,13 @@
   "packageManager": "pnpm@11.7.0",
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-commands": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-compaction": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-session": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-storage": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-storage-domain": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-storage-json": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-tools": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-commands": ">=0.1.0-rc.8 <0.2.0",
+    "@deepseek-ai/dsh-compaction": ">=0.1.0-rc.8 <0.2.0",
+    "@deepseek-ai/dsh-session": ">=0.1.0-rc.8 <0.2.0",
+    "@deepseek-ai/dsh-storage": ">=0.1.0-rc.8 <0.2.0",
+    "@deepseek-ai/dsh-storage-domain": ">=0.1.0-rc.8 <0.2.0",
+    "@deepseek-ai/dsh-storage-json": ">=0.1.0-rc.8 <0.2.0",
+    "@deepseek-ai/dsh-tools": ">=0.1.0-rc.8 <0.2.0",
     "@deepseek-ai/schemastery": "^3.18.0"
   },
   "dependencies": {
@@ -117,17 +117,17 @@
     "@deepseek-ai/cordis": "^4.0.1",
     "@deepseek-ai/cordis-plugin-include": "1.0.6",
     "@deepseek-ai/cordis-plugin-loader": "1.0.2",
-    "@deepseek-ai/dsh-agent": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-commands": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-compaction": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-llm": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-session": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-storage": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-storage-domain": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-storage-json": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-system-prompt": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-token-meter": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-tools": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-agent": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-commands": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-compaction": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-llm": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-session": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-storage": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-storage-domain": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-storage-json": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-system-prompt": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-token-meter": "0.1.0-rc.8",
+    "@deepseek-ai/dsh-tools": "0.1.0-rc.8",
     "@deepseek-ai/schemastery": "^3.18.0",
     "@types/node": "^22.19.0",
     "@vitest/coverage-v8": "^3.2.0",
