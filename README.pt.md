@@ -22,9 +22,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `0.1.0-rc.6` (peers fixados em `0.1.0-rc.6`).
+- DeepSeek Harness `0.1.0-rc.8` (peers fixados em `0.1.0-rc.8`).
 - Node `^22.19.0 || >=24.0.0`, somente ESM (`"type": "module"`).
-- Peers: `@deepseek-ai/cordis ^4.0.1`, `@deepseek-ai/schemastery ^3.18.0`, e `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` em `0.1.0-rc.6`.
+- Peers: `@deepseek-ai/cordis ^4.0.1`, `@deepseek-ai/schemastery ^3.18.0`, e `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` em `0.1.0-rc.8`.
 
 ## What you get
 
@@ -100,7 +100,7 @@ O `dsh-fast` consome apenas seams públicos: eventos `session/*` e `agent/*`, o 
 
 ## Known limitations
 
-- **Domínio de armazenamento, não eventos de sessão** — o `Session.append` do rc.6 não oferece marcador `ignorable` nem superfície de registro de eventos externa; um evento `fast/*` faria o coordenador de persistência recusar o log ao restaurar. As métricas vão ao domínio de armazenamento; os eventos brutos seguem como fonte reconstruível.
+- **Domínio de armazenamento, não eventos de sessão** — o `Session.append` do rc.8 não oferece marcador `ignorable` nem superfície de registro de eventos externa; um evento `fast/*` faria o coordenador de persistência recusar o log ao restaurar. As métricas vão ao domínio de armazenamento; os eventos brutos seguem como fonte reconstruível.
 - **A detecção de spill é heurística** — lê o aviso persistente (`Full … stored at:`); não há evento de sessão dedicado.
 - **O system prompt é um único balde** — AGENTS.md, skills e persona formam o system prompt montado; não há contagem por seção.
 - **O tempo de carga começa na publicação** — a leitura de disco de uma restauração ocorre antes de `session/created`; a duração reportada é publicação→primeira requisição.

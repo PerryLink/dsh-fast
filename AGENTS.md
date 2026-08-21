@@ -12,12 +12,12 @@ Standalone DeepSeek Harness plugin repository (`dsh-fast`). Development follows 
 - `src/estimate.ts` — the fixed-density heuristic that mirrors `@deepseek-ai/dsh-token-meter`'s estimator (not exported as a public subpath).
 - `src/sanitize.ts` — pure display/durable-boundary sanitization.
 - `scripts/` — `prepare.mjs` (build), `verify-self-contained.mjs`, `verify-artifacts.mjs`, `check-readme-sync.mjs` (five-language gate), `release.mjs` (bump + stamp + gate + commit + tag, never pushes), `changelog-section.mjs`.
-- `test/` — vitest; REAL `Context`/`SessionStore`/`Session`/`ToolRuntime`/`CommandRuntime`/`TokenMeter` and the REAL storage seam (dsh-storage + dsh-storage-json + dsh-storage-domain) from the 0.1.0-rc.6 peers. Only the optional token-meter measure function is scripted.
+- `test/` — vitest; REAL `Context`/`SessionStore`/`Session`/`ToolRuntime`/`CommandRuntime`/`TokenMeter` and the REAL storage seam (dsh-storage + dsh-storage-json + dsh-storage-domain) from the 0.1.0-rc.8 peers. Only the optional token-meter measure function is scripted.
 
 ## Hard rules applied here
 
 - **Read-only, off the model path.** The plugin folds session events O(1) per event and snapshots on a timer; it never touches `tools/*` waterfalls or the model request.
-- **Storage domain, not session events.** The rc.6 `Session.append` signature has no `ignorable` marker (`...opts: []` for non-surface events) and there is no external event-registration surface, so a custom `fast/*` session event would make the persistence coordinator (`assertEventsSupported`) refuse the log on restore. Metrics therefore persist to the `dsh_fast` storage domain; the raw events remain the reconstructable source of truth.
+- **Storage domain, not session events.** The rc.8 `Session.append` signature has no `ignorable` marker (`...opts: []` for non-surface events) and there is no external event-registration surface, so a custom `fast/*` session event would make the persistence coordinator (`assertEventsSupported`) refuse the log on restore. Metrics therefore persist to the `dsh_fast` storage domain; the raw events remain the reconstructable source of truth.
 - **Sanitize before display/durable write.** `sessionId` and the optional `cwd` are sanitized; control characters never reach a report or the domain.
 - **No tunables hardcoded.** Every knob is a validated `Config` field with a default in `src/config.ts`, an inline comment in `cordis.patch.yml`, and a row in the five-language README configuration table.
 - **This plugin registers no waterfall listeners.** If one is ever added, allow/passthrough MUST call `next()`.
@@ -26,7 +26,7 @@ Standalone DeepSeek Harness plugin repository (`dsh-fast`). Development follows 
 
 `pnpm run typecheck && pnpm run typecheck:ci && pnpm test && pnpm run build && pnpm run verify:self-contained && pnpm run verify:artifacts && node scripts/check-readme-sync.mjs && pnpm pack`
 
-- `typecheck` resolves `@deepseek-ai/*` through the installed 0.1.0-rc.6 peers; `typecheck:ci` clears `skipLibCheck` and enables `verbatimModuleSyntax` against the published types. Both must stay green.
+- `typecheck` resolves `@deepseek-ai/*` through the installed 0.1.0-rc.8 peers; `typecheck:ci` clears `skipLibCheck` and enables `verbatimModuleSyntax` against the published types. Both must stay green.
 
 ## Release
 

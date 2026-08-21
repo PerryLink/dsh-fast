@@ -3,7 +3,7 @@
  * the REAL storage seam (dsh-storage + dsh-storage-json backend + the
  * dsh-storage-domain facility) rooted in a per-mount temp directory, the REAL
  * commands and tools registries (SystemPrompt/ToolRuntime/CommandRuntime), and
- * the REAL `TokenMeter` from the 0.1.0-rc.6 peers. Nothing here is a
+ * the REAL `TokenMeter` from the 0.1.0-rc.8 peers. Nothing here is a
  * hand-written mock of a service.
  * @module dsh-fast/test/harness
  */

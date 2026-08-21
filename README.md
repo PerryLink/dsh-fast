@@ -22,9 +22,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `0.1.0-rc.6` (peers pinned to `0.1.0-rc.6`).
+- DeepSeek Harness `0.1.0-rc.8` (peers pinned to `0.1.0-rc.8`).
 - Node `^22.19.0 || >=24.0.0`, ESM only (`"type": "module"`).
-- Peer dependencies: `@deepseek-ai/cordis ^4.0.1`, `@deepseek-ai/schemastery ^3.18.0`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` at `0.1.0-rc.6`.
+- Peer dependencies: `@deepseek-ai/cordis ^4.0.1`, `@deepseek-ai/schemastery ^3.18.0`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` at `0.1.0-rc.8`.
 
 ## What you get
 
@@ -100,7 +100,7 @@ All tunables are Schemastery `Config` fields; invalid values fail the profile lo
 
 ## Known limitations
 
-- **Storage domain, not session events** — rc.6 `Session.append` offers no `ignorable` marker and no external event-registration surface, so a custom `fast/*` session event would make the persistence coordinator refuse the log on restore. Metrics are therefore persisted to the storage domain; the raw events remain the reconstructable source of truth.
+- **Storage domain, not session events** — rc.8 `Session.append` offers no `ignorable` marker and no external event-registration surface, so a custom `fast/*` session event would make the persistence coordinator refuse the log on restore. Metrics are therefore persisted to the storage domain; the raw events remain the reconstructable source of truth.
 - **Spill detection is heuristic** — it reads the durable spill notice (`Full … stored at:`); no dedicated session event exists.
 - **System prompt is one bucket** — AGENTS.md, skill directory, and persona are all part of the assembled system prompt; the header carries no per-section token accounting, so they are reported together.
 - **Load timing starts at publication** — the disk-read portion of a restore happens before `session/created` (owned by `sessionPersistence`) and is not observable from this plugin's allowed events; the reported duration is publication-to-first-request.

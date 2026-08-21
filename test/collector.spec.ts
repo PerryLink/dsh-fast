@@ -1,5 +1,5 @@
 /**
- * The session/event collector over a REAL `Session` from the 0.1.0-rc.6 peers:
+ * The session/event collector over a REAL `Session` from the 0.1.0-rc.8 peers:
  * load tracking, cache folding, compaction counting/trigger, spill detection,
  * and snapshot assembly. Only the optional token meter is supplied as a
  * scripted function; every session and event is real.
