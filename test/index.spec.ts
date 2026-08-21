@@ -37,7 +37,7 @@ describe('apply', () => {
     const base = await mountBase('index-command')
     bases.push(base)
     await mountPlugin(base)
-    const execution = await base.ctx.commands.execute(base.agent, '/fast', new AbortController().signal)
+    const execution = await base.ctx.commands.execute(base.agent, '/fast', [], new AbortController().signal)
     expect(execution).toBeDefined()
     expect(execution?.result.kind).toBe('success')
     if (execution?.result.kind === 'success') {

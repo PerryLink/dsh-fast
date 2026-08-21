@@ -77,7 +77,7 @@ try {
   }
 
   // Real behavior: the /fast command through the real commands service.
-  const execution = await ctx.commands.execute(agent, '/fast', new AbortController().signal)
+  const execution = await ctx.commands.execute(agent, '/fast', [], new AbortController().signal)
   const text = execution?.result?.text ?? ''
   if (!text.includes('dsh-fast')) {
     throw new Error(`Loader composition: /fast returned ${JSON.stringify(execution?.result)}`)
