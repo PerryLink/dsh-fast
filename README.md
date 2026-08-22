@@ -1,6 +1,7 @@
 <div align="center">
 
 # ⚡ dsh-fast
+[![Gitee](https://img.shields.io/badge/Gitee-mirror-c71d23?logo=gitee)](https://gitee.com/perrylink/dsh-fast)
 
 **Read-only performance diagnostics for DeepSeek Harness.**
 
