@@ -22,9 +22,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `0.1.0-rc.8`（peer 钉在 `0.1.0-rc.8`）。
+- DeepSeek Harness `0.1.1-rc.2`（peer 钉在 `0.1.1-rc.2`）。
 - Node `^22.19.0 || >=24.0.0`，纯 ESM（`"type": "module"`）。
-- peer 依赖：`@deepseek-ai/cordis ^4.0.1`、`@deepseek-ai/schemastery ^3.18.0`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-storage-domain`（`0.1.0-rc.8`）。
+- peer 依赖：`@deepseek-ai/cordis ^4.0.1`、`@deepseek-ai/schemastery ^3.18.0`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-storage-domain`（`0.1.1-rc.2`）。
 
 ## What you get
 
@@ -100,7 +100,7 @@ dsh plugin --profile demo remove dsh-fast    # 卸载
 
 ## Known limitations
 
-- **用存储域而非会话事件** —— rc.8 的 `Session.append` 没有 `ignorable` 标记能力，也没有外部事件注册面，写自定义 `fast/*` 会话事件会让持久化协调器在恢复时拒绝日志。因此度量改为持久化到存储域；原始事件仍是可重建的事实来源。
+- **用存储域而非会话事件** —— rc.2 的 `Session.append` 没有 `ignorable` 标记能力，也没有外部事件注册面，写自定义 `fast/*` 会话事件会让持久化协调器在恢复时拒绝日志。因此度量改为持久化到存储域；原始事件仍是可重建的事实来源。
 - **spill 检测是启发式** —— 读取持久化的 spill 提示（`Full … stored at:`）；没有专门的会话事件。
 - **系统提示词是单个桶** —— AGENTS.md、技能目录与人设都属于组装后的系统提示词；header 不携带分段 token 统计，因此合并上报。
 - **加载耗时从发布时刻起算** —— 恢复时的磁盘读取发生在 `session/created` 之前（由 `sessionPersistence` 负责），本插件允许的事件观察不到；上报的时长是发布到首次请求的延迟。

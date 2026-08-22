@@ -2,7 +2,7 @@
  * Durable metric storage over the harness storage domain. The `dsh-fast`
  * domain keeps one bounded history per session, so `/fast` and `fast_report`
  * metrics survive a restart and the trend stays queryable without touching the
- * session log (the rc.8 `Session.append` offers no `ignorable` marker and no
+ * session log (the rc.2 `Session.append` offers no `ignorable` marker and no
  * external event-registration surface, so a custom session event would make
  * the persistence coordinator refuse the log on restore).
  * @module dsh-fast/store
