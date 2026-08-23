@@ -123,7 +123,9 @@ pnpm pack
 
 ## Contributors
 
-`dsh-fast` contributors.
+感谢所有为 `dsh-fast` 做出贡献的人：
+
+- **[PerryLink](https://github.com/PerryLink)** —— 作者与维护者：设计并实现了只读诊断（会话加载耗时、spill 命中统计、compaction 指标、上下文注入体量、LLM 缓存命中率）、`/fast` 命令与 `fast_report` 工具、`dsh_fast` 存储域以及五语文档。
 
 ## PerryLink DSH Plugin Family
 

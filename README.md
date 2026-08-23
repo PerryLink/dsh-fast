@@ -124,7 +124,9 @@ pnpm pack
 
 ## Contributors
 
-`dsh-fast` contributors.
+Thanks to everyone who has contributed to `dsh-fast`:
+
+- **[PerryLink](https://github.com/PerryLink)** — author and maintainer: designed and built the read-only diagnostics (session-load timing, spill-hit counts, compaction metrics, context-injection volume, LLM cache hit rate), the `/fast` command and `fast_report` tool, the `dsh_fast` storage domain, and the five-language documentation.
 
 ## PerryLink DSH Plugin Family
 

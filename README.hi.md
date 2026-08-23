@@ -123,7 +123,9 @@ pnpm pack
 
 ## Contributors
 
-`dsh-fast` contributors.
+`dsh-fast` में योगदान देने वाले सभी लोगों का धन्यवाद:
+
+- **[PerryLink](https://github.com/PerryLink)** — लेखक और अनुरक्षक: रीड-ओनली डायग्नोस्टिक्स (सेशन-लोड विलंब, स्पिल-हिट गणना, कम्पैक्शन मीट्रिक्स, कॉन्टेक्स्ट-इंजेक्शन वॉल्यूम, LLM कैश हिट रेट), `/fast` कमांड और `fast_report` टूल, `dsh_fast` स्टोरेज डोमेन तथा पाँच-भाषा दस्तावेज़ का डिज़ाइन व निर्माण किया।
 
 ## PerryLink DSH Plugin Family
 

@@ -123,7 +123,9 @@ pnpm pack
 
 ## Contributors
 
-`dsh-fast` contributors.
+Obrigado a todas as pessoas que contribuíram com o `dsh-fast`:
+
+- **[PerryLink](https://github.com/PerryLink)** — autor e mantenedor: projetou e construiu os diagnósticos somente leitura (latência de carregamento de sessão, contagens de spill, métricas de compactação, volume de injeção de contexto, taxa de acertos de cache do LLM), o comando `/fast` e a ferramenta `fast_report`, o domínio de armazenamento `dsh_fast` e a documentação em cinco idiomas.
 
 ## PerryLink DSH Plugin Family
 
