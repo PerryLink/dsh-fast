@@ -21,6 +21,7 @@ import type {} from '@deepseek-ai/dsh-commands'
 import { Config, resolveConfig } from './config.ts'
 import { FastCollector } from './collector.ts'
 import type { MeasureFn, TokenMeasurement } from './collector.ts'
+import type { SystemSection } from './estimate.ts'
 import { buildReport, renderFastText } from './analyze.ts'
 import type { FastReport } from './model.ts'
 import { fastDomainSpec, appendSample } from './store.ts'
@@ -43,14 +44,22 @@ export type {
   ContextStats,
   CacheStats,
   StoredSample,
+  PromptBucket,
+  SystemPromptBreakdown,
 } from './model.ts'
 export { FastCollector, detectSpilledResult, flattenToolResultText, sharesOf, hitRateOf } from './collector.ts'
+export { classifySystemSections, type SystemSection } from './estimate.ts'
 export { buildReport, buildSuggestions, renderFastText } from './analyze.ts'
 export { fastDomainSpec, appendSample, historySchema } from './store.ts'
 
 /** The structural surface of the optional `ctx.tokenMeter` service. */
 interface TokenMeterService {
   measure(session: Session): TokenMeasurement
+}
+
+/** The structural surface of the optional `ctx.systemPrompt` service (section assembly). */
+interface SystemPromptService {
+  assemble(): Promise<{ sections: readonly { name: string; text: string }[] }>
 }
 
 /**
@@ -84,9 +93,22 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
     }
   }
 
+  /** Assemble the named system-prompt sections for the per-section breakdown. */
+  const assembleSections = async (): Promise<readonly SystemSection[] | undefined> => {
+    const systemPrompt = ctx.get('systemPrompt') as unknown as SystemPromptService | undefined
+    if (systemPrompt === undefined) return undefined
+    try {
+      const assembly = await systemPrompt.assemble()
+      return assembly.sections.map(section => ({ name: section.name, text: section.text }))
+    } catch (error) {
+      logger.warn(`system-prompt section assembly failed: ${error instanceof Error ? error.message : String(error)}`)
+      return undefined
+    }
+  }
+
   /** Build the complete report for one session. */
-  const reportFor = (session: Session): FastReport => {
-    const snapshot = collector.snapshot(session, measure)
+  const reportFor = async (session: Session): Promise<FastReport> => {
+    const snapshot = collector.snapshot(session, measure, await assembleSections())
     return buildReport(
       snapshot,
       {
@@ -100,8 +122,8 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
   }
 
   /** Append one snapshot to the session's durable history (fire-and-forget). */
-  const persist = (session: Session): void => {
-    const snapshot = collector.snapshot(session, measure)
+  const persist = async (session: Session): Promise<void> => {
+    const snapshot = collector.snapshot(session, measure, await assembleSections())
     const next = appendSample(sessions.get(session.id), { at: Date.now(), snapshot }, resolved.maxHistorySamples)
     void sessions.put(session.id, next).catch((error: unknown) => {
       logger.warn(`session "${session.id}": persist failed: ${error instanceof Error ? error.message : String(error)}`)
@@ -112,8 +134,8 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
   ctx.commands.register({
     name: 'fast',
     description: 'Print the dsh-fast performance report for the active session.',
-    handler: (invocation) => {
-      const report = reportFor(invocation.agent.session)
+    async handler(invocation) {
+      const report = await reportFor(invocation.agent.session)
       return { kind: 'success', text: renderFastText(report) }
     },
   })
@@ -171,6 +193,17 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
               systemShare: { type: 'number', required: true },
               toolsShare: { type: 'number', required: true },
               surfaceShare: { type: 'number', required: true },
+              systemBreakdown: {
+                type: 'object',
+                properties: {
+                  agentsMd: { type: 'object', properties: { tokens: { type: 'number', required: true }, chars: { type: 'number', required: true }, share: { type: 'number', required: true } }, additionalProperties: false, required: true },
+                  skills: { type: 'object', properties: { tokens: { type: 'number', required: true }, chars: { type: 'number', required: true }, share: { type: 'number', required: true } }, additionalProperties: false, required: true },
+                  persona: { type: 'object', properties: { tokens: { type: 'number', required: true }, chars: { type: 'number', required: true }, share: { type: 'number', required: true } }, additionalProperties: false, required: true },
+                  other: { type: 'object', properties: { tokens: { type: 'number', required: true }, chars: { type: 'number', required: true }, share: { type: 'number', required: true } }, additionalProperties: false, required: true },
+                },
+                additionalProperties: false,
+                required: true,
+              },
             },
             additionalProperties: false,
             required: true,
@@ -199,7 +232,7 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
       if (session === undefined) {
         throw new Error('fast_report requires an agent-owned session')
       }
-      return reportFor(session)
+      return await reportFor(session)
     },
   }))
 
@@ -224,7 +257,7 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
       for (const session of collector.liveSessions()) {
         if (!collector.isDirty(session)) continue
         collector.markClean(session)
-        persist(session)
+        void persist(session)
       }
     }, resolved.snapshotIntervalMs)
     return async () => {

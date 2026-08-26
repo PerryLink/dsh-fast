@@ -22,6 +22,12 @@ function snapshot(): FastSnapshot {
       systemShare: 0.4,
       toolsShare: 0.2,
       surfaceShare: 0.4,
+      systemBreakdown: {
+        agentsMd: { tokens: 0, chars: 0, share: 0 },
+        skills: { tokens: 0, chars: 0, share: 0 },
+        persona: { tokens: 100, chars: 400, share: 0.25 },
+        other: { tokens: 300, chars: 1_200, share: 0.75 },
+      },
     },
     cache: { inputTokens: 800, cacheReadTokens: 200, cacheWriteTokens: 50, outputTokens: 100, hitRate: 0.2 },
   }

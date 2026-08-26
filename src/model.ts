@@ -44,11 +44,33 @@ export interface CompactionStats {
   shadowedTokens: number
 }
 
+/** One named bucket of the injected system prompt. */
+export interface PromptBucket {
+  /** Heuristic token estimate for this bucket (`ceil(chars / 4)`). */
+  tokens: number
+  /** Raw character count of the bucket's sections. */
+  chars: number
+  /** Fraction of the total system-prompt bucket tokens (0 when the total is 0). */
+  share: number
+}
+
+/** The system-prompt breakdown: AGENTS.md / skills / persona / other named sections. */
+export interface SystemPromptBreakdown {
+  /** Sections that carry agent instructions (AGENTS.md-style). */
+  agentsMd: PromptBucket
+  /** Sections that carry skill content. */
+  skills: PromptBucket
+  /** The `deployment:persona` section. */
+  persona: PromptBucket
+  /** Harness identity, tool guidance, and any unclassified sections. */
+  other: PromptBucket
+}
+
 /** Context-injection volume: where the request context's tokens live. */
 export interface ContextStats {
   /** Canonical current pressure (token-meter total), or the heuristic header+surface sum. */
   totalTokens: number
-  /** Assembled system-prompt tokens — AGENTS.md, skill directory, persona, and harness instructions. */
+  /** Assembled system-prompt tokens — harness identity, persona, tool guidance, and plugin sections. */
   systemTokens: number
   /** Tool-schema tokens. */
   toolSchemaTokens: number
@@ -60,6 +82,8 @@ export interface ContextStats {
   toolsShare: number
   /** `surfaceTokens / totalTokens` (0 when the total is 0). */
   surfaceShare: number
+  /** Per-section system-prompt breakdown (AGENTS.md / skills / persona / other). */
+  systemBreakdown: SystemPromptBreakdown
 }
 
 /** LLM cache accounting aggregated from `assistant/message` usage. */

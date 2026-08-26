@@ -33,6 +33,21 @@ const compactionSchema = z.object({
   shadowedTokens: z.number().int().nonnegative(),
 })
 
+/** Zod schema for one prompt bucket. */
+const bucketSchema = z.object({
+  tokens: z.number().nonnegative(),
+  chars: z.number().nonnegative(),
+  share: z.number(),
+})
+
+/** Zod schema for the system-prompt breakdown. */
+const breakdownSchema = z.object({
+  agentsMd: bucketSchema,
+  skills: bucketSchema,
+  persona: bucketSchema,
+  other: bucketSchema,
+})
+
 /** Zod schema for the context section. */
 const contextSchema = z.object({
   totalTokens: z.number().nonnegative(),
@@ -42,6 +57,7 @@ const contextSchema = z.object({
   systemShare: z.number(),
   toolsShare: z.number(),
   surfaceShare: z.number(),
+  systemBreakdown: breakdownSchema,
 })
 
 /** Zod schema for the cache section. */

@@ -13,7 +13,7 @@ import type { Session, SessionEvent, ToolResultMessage } from '@deepseek-ai/dsh-
 import type {} from '@deepseek-ai/dsh-compaction'
 import type { FastSnapshot, CacheStats, ContextStats } from './model.ts'
 import type { ResolvedConfig } from './config.ts'
-import { estimateSystemTokens, estimateToolsTokens } from './estimate.ts'
+import { classifySystemSections, estimateSystemTokens, estimateToolsTokens, type SystemSection } from './estimate.ts'
 
 /**
  * The structural surface of the optional `ctx.tokenMeter` service. Only the
@@ -184,9 +184,12 @@ export class FastCollector {
    * the optional token meter is consulted, so it never runs in the append path.
    * @param session - the session to snapshot.
    * @param measure - optional token-meter measure function.
+   * @param sections - optional named system-prompt sections (from the optional
+   *   `systemPrompt` service); absent = the whole rendered system prompt is
+   *   attributed to the `other` bucket.
    * @returns the snapshot.
    */
-  snapshot(session: Session, measure?: MeasureFn): FastSnapshot {
+  snapshot(session: Session, measure?: MeasureFn, sections?: readonly SystemSection[]): FastSnapshot {
     const state = this.live.get(session)
     if (state === undefined) return emptySnapshot()
     const measurement = measure === undefined ? undefined : measure(session)
@@ -194,6 +197,10 @@ export class FastCollector {
     const toolSchemaTokens = estimateToolsTokens(state.lastHeader)
     const surfaceTokens = measurement?.surfaceTokens ?? 0
     const totalTokens = measurement?.totalTokens ?? (systemTokens + toolSchemaTokens + surfaceTokens)
+    const systemChars = state.lastHeader?.system?.length ?? 0
+    const systemBreakdown = classifySystemSections(
+      sections ?? (systemChars > 0 ? [{ name: 'other', text: state.lastHeader!.system! }] : []),
+    )
     return {
       load: {
         kind: state.kind,
@@ -213,6 +220,7 @@ export class FastCollector {
         toolSchemaTokens,
         surfaceTokens,
         ...sharesOf(totalTokens, systemTokens, toolSchemaTokens, surfaceTokens),
+        systemBreakdown,
       },
       cache: this.cacheStats(state),
     }
@@ -283,6 +291,12 @@ function emptySnapshot(): FastSnapshot {
       systemShare: 0,
       toolsShare: 0,
       surfaceShare: 0,
+      systemBreakdown: {
+        agentsMd: { tokens: 0, chars: 0, share: 0 },
+        skills: { tokens: 0, chars: 0, share: 0 },
+        persona: { tokens: 0, chars: 0, share: 0 },
+        other: { tokens: 0, chars: 0, share: 0 },
+      },
     },
     cache: { inputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, outputTokens: 0, hitRate: null },
   }
