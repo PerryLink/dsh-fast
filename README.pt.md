@@ -1,6 +1,7 @@
 <div align="center">
 
 # ⚡ dsh-fast
+- **Canal 1024 store**: `npm i -g dsh1024` uma vez, depois `dsh1024 plugin --profile web add dsh-fast` (conta para o ranking de instalações do [deepseek1024.com](https://deepseek1024.com)).
 
 **Diagnóstico de desempenho somente leitura para DeepSeek Harness.**
 
