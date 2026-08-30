@@ -6,10 +6,10 @@
  * @module dsh-fast/test/collector.spec
  */
 
-import { CallId } from '@deepseek-ai/dsh-llm'
 import { createAssistantMessage, createToolResultMessage, createUserMessage } from '@deepseek-ai/dsh-llm/message'
 import { Session, SessionId, type SessionEvent } from '@deepseek-ai/dsh-session'
 import { describe, expect, it } from 'vitest'
+import { CallId } from './call-id.ts'
 import {
   FastCollector,
   detectSpilledResult,
