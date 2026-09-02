@@ -23,7 +23,7 @@
 
 ## Compatibility
 
-- DeepSeek Harness `0.1.1-rc.2` (peers fijados a `0.1.1-rc.2`).
+- DeepSeek Harness `0.1.2-alpha.5` (peers fijados a `0.1.2-alpha.5`).
 0.1.2-alpha.5 (adaptado el 2026-09-02): el sobre de sesión conserva su campo ignorable solo para compatibilidad de lectura de logs almacenados - Session.append aún no puede estamparlo, por lo que el comportamiento de la puerta no cambia.
 - Node `^22.19.0 || >=24.0.0`, solo ESM (`"type": "module"`).
 - Peers: `@deepseek-ai/cordis ^4.0.1`, `@deepseek-ai/schemastery ^3.18.0`, y `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` en `0.1.1-rc.2`.
