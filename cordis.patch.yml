@@ -3,20 +3,13 @@
 # Every key below is a Config field (Schemastery schema); invalid values fail
 # the profile load loudly. See README.md "Configuration" for the full table.
 # The plugin is read-only and safe, so it defaults to enabled.
+#
+# The storage seam (storage / storage-json / storage-domain) is NOT inserted
+# here: every shipped dsh profile composes it through dsh-base, and inserting
+# the same ids again makes the profile refuse to boot with
+# `duplicate loader entry id: storage`. Bare profiles must compose the
+# storage stack themselves.
 - insert:
-    - id: storage
-      name: '@deepseek-ai/dsh-storage'
-
-    - id: storage-json
-      name: '@deepseek-ai/dsh-storage-json'
-      config:
-        root: !!js dshHomePath('storages')
-
-    - id: storage-domain
-      name: '@deepseek-ai/dsh-storage-domain'
-      config:
-        backend: json
-
     - id: dsh-fast
       name: dsh-fast
       config:
