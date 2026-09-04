@@ -26,8 +26,7 @@
 
 ## Compatibility
 
-- DeepSeek Harness `0.1.2-alpha.5` (peers pinned to `0.1.2-alpha.5`).
-0.1.2-alpha.5 (adapted 2026-09-02): the session envelope keeps its ignorable field for stored-log read compatibility only - Session.append still cannot stamp it, so audit-gate behavior is unchanged.
+- DeepSeek Harness `0.1.2-rc.1` (adapted 2026-09-04): the session envelope keeps its ignorable field for stored-log read compatibility only - Session.append still cannot stamp it, so audit-gate behavior is unchanged.
 - Node `^22.19.0 || >=24.0.0`, ESM only (`"type": "module"`).
 - Peer dependencies: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` at `>=0.1.0-rc.8 <0.2.0`.
 
