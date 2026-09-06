@@ -23,7 +23,7 @@
 
 ## Compatibility
 
-- DeepSeek Harness `0.1.2-rc.1` (peers fixados em `0.1.2-rc.1`).
+- DeepSeek Harness `dsh-v0.1.3-alpha.1` (peers fixados em `0.1.2-rc.1`).
 0.1.2-rc.1 (adaptado em 2026-09-02): o envelope de sessão mantém seu campo ignorable apenas para compatibilidade de leitura de logs armazenados - o Session.append ainda não consegue estampá-lo, então o comportamento da porta não muda. Verificado em 2026-09-06 contra o checkout master do dsh-v0.1.3-alpha.1 (cadeia completa de portas + smoke de instalação de profile).
 - Node `^22.19.0 || >=24.0.0`, somente ESM (`"type": "module"`).
 - Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, e `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` em `>=0.1.2-rc.1 <0.2.0`.
