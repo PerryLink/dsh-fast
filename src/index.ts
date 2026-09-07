@@ -52,6 +52,8 @@ export { classifySystemSections, type SystemSection } from './estimate.ts'
 export { buildReport, buildSuggestions, renderFastText } from './analyze.ts'
 export { fastDomainSpec, appendSample, historySchema } from './store.ts'
 
+// Service Definition — the structural surfaces of the optional tokenMeter and
+// systemPrompt services, plus the fast_report tool schema defined inline below.
 /** The structural surface of the optional `ctx.tokenMeter` service. */
 interface TokenMeterService {
   measure(session: Session): TokenMeasurement
@@ -80,6 +82,9 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
   const domain = await ctx.storageDomain.open(fastDomainSpec)
   const sessions = domain.table('sessions')
 
+  // Consumer — the report paths use the optional tokenMeter/systemPrompt
+  // services at call time; the /fast handler and the fast_report execute turn
+  // the measurements into the model-visible report.
   /** Lazy, contained lookup of the optional token meter. */
   const measure: MeasureFn = (session) => {
     const meter = ctx.get('tokenMeter') as unknown as TokenMeterService | undefined
@@ -141,6 +146,8 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
   })
 
   // Model tool: the same report as structured data.
+  // Service Provider — ctx.tools.register mounts the fast_report tool (the
+  // /fast slash command above registers on ctx.commands).
   ctx.tools.register(defineTool({
     name: 'fast_report',
     description: 'Return the current dsh-fast performance report for the active session: session load timing, spill hits, compaction count and trigger, context-injection volume (AGENTS.md/skills/tool-schema token share), LLM cache hit rate, and optimization suggestions.',
