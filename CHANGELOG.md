@@ -5,6 +5,25 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.10] - 2026-09-09
+
+### Fixed
+
+- Read the system prompt from the session surface on `0.1.5-alpha.1`: it is now surface node 0 (a `system/message`) instead of `EpochHeader.system`, which the envelope type no longer declares. The collector takes the last non-empty system node (an empty node is dormant and never restores older text), mirroring the host agent loop, and prices it with the same per-block heuristic as `dsh-token-meter`'s `estimateSystemMessage`.
+- Price the meter's conversation surface net of the system prompt on `0.1.5-alpha.1`: `tokenMeter.measure().surfaceTokens` now includes the system node, so subtracting `systemTokens` keeps the prompt out of the surface bucket (it was counted in both) and stops it from inflating the `thresholds.surfaceTokens` signal.
+- Mount `SessionProjection` in the test harness: `TokenMeter` injects `sessionProjections` on `0.1.5-alpha.1`, so the meter silently stayed unmounted and the meter branch had zero coverage. The harness now fails loudly when the meter does not mount.
+
+### Changed
+
+- Adapt to DeepSeek Harness `0.1.5-alpha.1` (public tag commit `5dda764ed3`): devDependencies pin `0.1.5-alpha.1`, peers widen to `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0` (the prerelease tuple in the old single range never matched `0.1.5-alpha.1`), `dshWorkshop.compatibility.dshVersions` lists both lines, and the compat workflow pins `@deepseek-ai/dsh` / `dsh-base` / `dsh-headless` at `0.1.5-alpha.1`.
+- The `0.1.2-rc.1` line stays supported at runtime: when no `system/message` node exists, the collector still prices the legacy `header.system` string through a structural read, and it does not subtract it from the meter surface (legacy meters never contained the prompt).
+- `context.surfaceTokens` is now conversation history only, so the system/tools/surface buckets no longer double-count the prompt. Samples persisted in the `dsh_fast` domain before this release were written under the old surface semantics: trends that cross this version step change definition.
+
+### Docs
+
+- Five-language READMEs: host baseline `dsh-v0.1.5-alpha.1` (verified 2026-09-09), the composite peer range and the `0.1.5-alpha.1` devDependency pins, the "system prompt is one bucket" limitation (it is surface node 0 now), and the surface-token definition.
+- AGENTS.md, THIRD_PARTY_NOTICES.md, the issue template, and the compat/CI workflow labels refreshed to the `0.1.5-alpha.1` baseline.
+
 ## [0.2.9] - 2026-09-08
 
 ### Docs
