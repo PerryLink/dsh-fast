@@ -34,7 +34,8 @@
           systemPromptTokens: 20000
           # Warn when the tool schema exceeds this many tokens.
           toolSchemaTokens: 8000
-          # Warn when the conversation surface exceeds this many tokens.
+          # Warn when the conversation surface (message history, excluding the
+          # system prompt and tool schema) exceeds this many tokens.
           surfaceTokens: 60000
           # Warn when the LLM cache hit rate falls below this (0..1).
           cacheHitRateFloor: 0.1

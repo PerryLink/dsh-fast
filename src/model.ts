@@ -74,7 +74,7 @@ export interface ContextStats {
   systemTokens: number
   /** Tool-schema tokens. */
   toolSchemaTokens: number
-  /** Conversation-surface tokens (message history). */
+  /** Conversation-surface tokens (message history; the system prompt is priced separately). */
   surfaceTokens: number
   /** `systemTokens / totalTokens` (0 when the total is 0). */
   systemShare: number

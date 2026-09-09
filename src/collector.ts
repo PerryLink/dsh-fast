@@ -8,18 +8,26 @@
  * @module dsh-fast/collector
  */
 
-import type { Session, SessionEvent, ToolResultMessage } from '@deepseek-ai/dsh-session'
+import type { EpochHeader, Session, SessionEvent, SystemMessage, ToolResultMessage } from '@deepseek-ai/dsh-session'
 // Type-only: registers the `compaction/*` SessionEventMap merge this collector folds.
 import type {} from '@deepseek-ai/dsh-compaction'
 import type { FastSnapshot, CacheStats, ContextStats } from './model.ts'
 import type { ResolvedConfig } from './config.ts'
-import { classifySystemSections, estimateSystemTokens, estimateToolsTokens, type SystemSection } from './estimate.ts'
+import {
+  classifySystemSections,
+  estimateLegacySystemTokens,
+  estimateSystemTokens,
+  estimateToolsTokens,
+  type SystemSection,
+} from './estimate.ts'
 
 /**
  * The structural surface of the optional `ctx.tokenMeter` service. Only the
  * fields dsh-fast reads are declared; the service is optional, so a host
  * without it still reports system/tool-schema volumes (surface/total fall back
- * to the header heuristic).
+ * to the heuristic header+surface sum). On 0.1.5-alpha.1 `surfaceTokens`
+ * includes the `system/message` surface node, which {@link FastCollector.snapshot}
+ * subtracts so the surface bucket stays conversation history.
  */
 export interface TokenMeasurement {
   readonly totalTokens: number
@@ -31,6 +39,45 @@ export type MeasureFn = (session: Session) => TokenMeasurement | undefined
 
 /** The durable marker every spill notice carries (`... Full ... stored at: <locator> ...`). */
 const SPILL_NOTICE_MARKERS = ['Full', 'stored at:'] as const
+
+/**
+ * The effective system prompt: the last non-empty `system/message` node in
+ * surface order. 0.1.5-alpha.1 derives the prompt from surface node 0; an empty
+ * node is dormant and never restores older text. Mirrors
+ * `SystemPromptProjection` in the host agent loop.
+ * @param session - the session to read.
+ * @returns the effective system message, or undefined when none is active.
+ */
+export function effectiveSystemMessage(session: Session): SystemMessage | undefined {
+  let effective: SystemMessage | undefined
+  for (const seq of session.surface.nodes) {
+    const event = session.eventAt(seq)
+    if (event?.type !== 'system/message') continue
+    const message = event.data.message
+    if (message.content.length === 0) continue
+    effective = message
+  }
+  return effective
+}
+
+/** The display/durable text of a system message (text blocks plus structural JSON). */
+function systemTextOf(message: SystemMessage): string {
+  let text = ''
+  for (const block of message.content) text += block.type === 'text' ? block.text : JSON.stringify(block)
+  return text
+}
+
+/**
+ * Structural read of the pre-0.1.5 `EpochHeader.system` string, removed from
+ * the public type when the prompt moved to surface node 0. This keeps the
+ * runtime fallback for the `0.1.2-rc.1` peer line.
+ * @param header - canonical request envelope, or undefined before any request.
+ * @returns the legacy prompt text, or undefined when absent.
+ */
+function legacySystemText(header: EpochHeader | undefined): string | undefined {
+  const system = (header as { system?: unknown } | undefined)?.system
+  return typeof system === 'string' ? system : undefined
+}
 
 /** Flatten a tool result's model-facing text blocks to one string. */
 export function flattenToolResultText(message: ToolResultMessage): string {
@@ -93,7 +140,7 @@ interface FastState {
   cacheReadTokens: number
   cacheWriteTokens: number
   outputTokens: number
-  lastHeader: import('@deepseek-ai/dsh-session').EpochHeader | undefined
+  lastHeader: EpochHeader | undefined
   dirty: boolean
 }
 
@@ -193,14 +240,25 @@ export class FastCollector {
     const state = this.live.get(session)
     if (state === undefined) return emptySnapshot()
     const measurement = measure === undefined ? undefined : measure(session)
-    const systemTokens = estimateSystemTokens(state.lastHeader)
+    const systemMessage = effectiveSystemMessage(session)
+    const legacySystem = systemMessage === undefined ? legacySystemText(state.lastHeader) : undefined
+    const systemTokens = systemMessage === undefined
+      ? estimateLegacySystemTokens(legacySystem)
+      : estimateSystemTokens(systemMessage)
     const toolSchemaTokens = estimateToolsTokens(state.lastHeader)
-    const surfaceTokens = measurement?.surfaceTokens ?? 0
+    const measuredSurfaceTokens = measurement?.surfaceTokens ?? 0
+    // 0.1.5-alpha.1 prices the system prompt into the meter's surface (surface
+    // node 0), so subtract it and keep the surface bucket conversation history.
+    // The legacy line kept `header.system` out of the meter surface entirely.
+    const surfaceTokens = systemMessage === undefined
+      ? measuredSurfaceTokens
+      : Math.max(0, measuredSurfaceTokens - systemTokens)
     const totalTokens = measurement?.totalTokens ?? (systemTokens + toolSchemaTokens + surfaceTokens)
-    const systemChars = state.lastHeader?.system?.length ?? 0
-    const systemBreakdown = classifySystemSections(
-      sections ?? (systemChars > 0 ? [{ name: 'other', text: state.lastHeader!.system! }] : []),
-    )
+    const systemText = systemMessage === undefined ? legacySystem : systemTextOf(systemMessage)
+    const syntheticSections: readonly SystemSection[] = systemText === undefined || systemText.length === 0
+      ? []
+      : [{ name: 'other', text: systemText }]
+    const systemBreakdown = classifySystemSections(sections ?? syntheticSections)
     return {
       load: {
         kind: state.kind,

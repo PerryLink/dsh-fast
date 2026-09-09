@@ -8,7 +8,7 @@
  * @module dsh-fast/estimate
  */
 
-import type { EpochHeader } from '@deepseek-ai/dsh-session'
+import type { EpochHeader, SystemMessage } from '@deepseek-ai/dsh-session'
 import type { SystemPromptBreakdown } from './model.ts'
 
 /** Fixed text-density estimate (chars per token). */
@@ -73,13 +73,32 @@ export function classifySystemSections(sections: readonly SystemSection[]): Syst
 
 /**
  * Price the assembled system prompt (harness identity + persona + tool
- * guidance + plugin sections).
- * @param header - canonical request envelope, or undefined before any request.
+ * guidance + plugin sections). 0.1.5-alpha.1 represents it as surface node 0
+ * (a `system/message`) instead of the request envelope's `system` field, so
+ * this mirrors `estimateSystemMessage` in `@deepseek-ai/dsh-token-meter`:
+ * empty content prices as 0 ("no system prompt").
+ * @param message - the effective system message, or undefined when none is active.
+ * @returns heuristic system-prompt tokens; 0 when absent or empty.
+ */
+export function estimateSystemTokens(message: SystemMessage | undefined): number {
+  if (message === undefined || message.content.length === 0) return 0
+  let characters = 0
+  for (const block of message.content) {
+    characters += block.type === 'text' ? block.text.length : JSON.stringify(block).length
+  }
+  return Math.ceil(characters / CHARS_PER_TOKEN) + ROLE_OVERHEAD
+}
+
+/**
+ * Price the legacy (<= 0.1.3-alpha.1) `EpochHeader.system` string. Kept as the
+ * runtime fallback for the old peer line, where the prompt never reached the
+ * surface and lived in the request envelope.
+ * @param system - the legacy rendered prompt text, or undefined before any request.
  * @returns heuristic system-prompt tokens; 0 when absent.
  */
-export function estimateSystemTokens(header: EpochHeader | undefined): number {
-  if (header?.system === undefined) return 0
-  return Math.ceil(header.system.length / CHARS_PER_TOKEN) + ROLE_OVERHEAD
+export function estimateLegacySystemTokens(system: string | undefined): number {
+  if (system === undefined) return 0
+  return Math.ceil(system.length / CHARS_PER_TOKEN) + ROLE_OVERHEAD
 }
 
 /**
