@@ -4,20 +4,34 @@
  * @module dsh-fast/test/estimate.spec
  */
 
+import { createSystemMessage } from '@deepseek-ai/dsh-llm/message'
 import { describe, expect, it } from 'vitest'
 import type { EpochHeader } from '@deepseek-ai/dsh-session'
-import { classifySystemSections, estimateSystemTokens, estimateToolsTokens } from '../src/estimate.ts'
+import {
+  classifySystemSections,
+  estimateLegacySystemTokens,
+  estimateSystemTokens,
+  estimateToolsTokens,
+} from '../src/estimate.ts'
 
 describe('estimateSystemTokens', () => {
-  it('returns 0 when the header or system prompt is absent', () => {
+  it('returns 0 when the system message is absent or its content is empty', () => {
     expect(estimateSystemTokens(undefined)).toBe(0)
-    expect(estimateSystemTokens({ config: { provider: 'p', model: 'm' } })).toBe(0)
+    expect(estimateSystemTokens(createSystemMessage('', 'test'))).toBe(0)
   })
 
-  it('prices a system prompt at ceil(chars/4) + framing overhead', () => {
+  it('prices a system message at ceil(chars/4) + framing overhead', () => {
     const system = 'You are a helpful assistant.'
-    expect(estimateSystemTokens({ config: { provider: 'p', model: 'm' }, system }))
+    expect(estimateSystemTokens(createSystemMessage(system, 'test')))
       .toBe(Math.ceil(system.length / 4) + 4)
+  })
+})
+
+describe('estimateLegacySystemTokens', () => {
+  it('keeps pricing the pre-0.1.5 header.system string for the old peer line', () => {
+    expect(estimateLegacySystemTokens(undefined)).toBe(0)
+    const system = 'You are a helpful assistant.'
+    expect(estimateLegacySystemTokens(system)).toBe(Math.ceil(system.length / 4) + 4)
   })
 })
 

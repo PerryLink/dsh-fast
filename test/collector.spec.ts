@@ -1,12 +1,12 @@
 /**
- * The session/event collector over a REAL `Session` from the 0.1.1-rc.2 peers:
- * load tracking, cache folding, compaction counting/trigger, spill detection,
- * and snapshot assembly. Only the optional token meter is supplied as a
- * scripted function; every session and event is real.
+ * The session/event collector over a REAL `Session` from the 0.1.5-alpha.1
+ * peers: load tracking, cache folding, compaction counting/trigger, spill
+ * detection, system-prompt accounting, and snapshot assembly. Only the optional
+ * token meter is supplied as a scripted function; every session and event is real.
  * @module dsh-fast/test/collector.spec
  */
 
-import { createAssistantMessage, createToolResultMessage, createUserMessage } from '@deepseek-ai/dsh-llm/message'
+import { createAssistantMessage, createSystemMessage, createToolResultMessage, createUserMessage } from '@deepseek-ai/dsh-llm/message'
 import { Session, SessionId, type SessionEvent } from '@deepseek-ai/dsh-session'
 import { describe, expect, it } from 'vitest'
 import { CallId } from './call-id.ts'
@@ -32,16 +32,24 @@ function feed(
   collector.handleEvent(session, event)
 }
 
+/** The rendered prompt the fixtures append as surface node 0 (0.1.5-alpha.1). */
+const SYSTEM_TEXT = 'You are a helpful assistant.'
+
 /** The standard happy path: load + spill + cache over one step. */
 function happyPath(collector: FastCollector, session: Session): void {
   feed(collector, session, 'turn/start', { turn: 1 })
+  feed(collector, session, 'step/start', { turn: 1, step: 1 })
+  feed(collector, session, 'system/message', {
+    turn: 1,
+    step: 1,
+    message: createSystemMessage(SYSTEM_TEXT, 'dsh-fast-test'),
+  }, true)
   feed(collector, session, 'user/message', createUserMessage({
     content: [{ type: 'text', text: 'hello' }],
     source: { kind: 'user' },
   }), true)
-  feed(collector, session, 'step/start', { turn: 1, step: 1 })
   feed(collector, session, 'request/header', {
-    header: { config: { provider: 'deepseek', model: 'deepseek-chat' }, system: 'You are a helpful assistant.' },
+    header: { config: { provider: 'deepseek', model: 'deepseek-chat' } },
     reason: 'initial',
   })
   feed(collector, session, 'tool/call', { turn: 1, step: 1, callId: CallId('c1'), name: 'bash', arguments: '{}' })
@@ -84,9 +92,70 @@ describe('collector load, spill, and cache', () => {
     expect(snapshot.cache.cacheWriteTokens).toBe(50)
     expect(snapshot.cache.outputTokens).toBe(100)
     expect(snapshot.cache.hitRate).toBeCloseTo(0.2)
-    expect(snapshot.context.systemTokens).toBeGreaterThan(0)
-    expect(snapshot.context.surfaceTokens).toBe(300)
+    expect(snapshot.context.systemTokens).toBe(Math.ceil(SYSTEM_TEXT.length / 4) + 4)
+    // 0.1.5-alpha.1 prices the system prompt into the meter surface; dsh-fast subtracts it.
+    expect(snapshot.context.surfaceTokens).toBe(300 - snapshot.context.systemTokens)
+    expect(snapshot.context.systemBreakdown.other.chars).toBe(SYSTEM_TEXT.length)
     expect(snapshot.context.totalTokens).toBe(1_000)
+  })
+})
+
+describe('collector system-prompt accounting', () => {
+  it('leaves the meter surface untouched when no system node exists', () => {
+    const session = Session.create(SessionId('collector-no-system'))
+    const collector = new FastCollector(resolveConfig({}))
+    collector.handleSessionCreated(session)
+    feed(collector, session, 'turn/start', { turn: 1 })
+    feed(collector, session, 'user/message', createUserMessage({
+      content: [{ type: 'text', text: 'hello' }],
+      source: { kind: 'user' },
+    }), true)
+
+    const snapshot = collector.snapshot(session, () => ({ totalTokens: 500, surfaceTokens: 300 }))
+    expect(snapshot.context.systemTokens).toBe(0)
+    expect(snapshot.context.surfaceTokens).toBe(300)
+    expect(snapshot.context.totalTokens).toBe(500)
+  })
+
+  it('ignores a dormant empty system node and prices the last non-empty one', () => {
+    const session = Session.create(SessionId('collector-dormant-system'))
+    const collector = new FastCollector(resolveConfig({}))
+    collector.handleSessionCreated(session)
+    feed(collector, session, 'turn/start', { turn: 1 })
+    feed(collector, session, 'step/start', { turn: 1, step: 1 })
+    feed(collector, session, 'system/message', {
+      turn: 1,
+      step: 1,
+      message: createSystemMessage(SYSTEM_TEXT, 'dsh-fast-test'),
+    }, true)
+    feed(collector, session, 'system/message', {
+      turn: 1,
+      step: 1,
+      message: createSystemMessage('', 'dsh-fast-test'),
+    }, true)
+
+    const snapshot = collector.snapshot(session, () => ({ totalTokens: 500, surfaceTokens: 300 }))
+    expect(snapshot.context.systemTokens).toBe(Math.ceil(SYSTEM_TEXT.length / 4) + 4)
+    expect(snapshot.context.surfaceTokens).toBe(300 - snapshot.context.systemTokens)
+  })
+
+  it('falls back to the legacy header.system string when no system node exists', () => {
+    const session = Session.create(SessionId('collector-legacy-system'))
+    const collector = new FastCollector(resolveConfig({}))
+    collector.handleSessionCreated(session)
+    // A 0.1.2/0.1.3 host still carries the prompt in the request envelope; feed
+    // the fold directly because 0.1.5-alpha.1 refuses header.system at append.
+    collector.handleEvent(session, {
+      type: 'request/header',
+      time: 1_000,
+      data: { header: { config: { provider: 'p', model: 'm' }, system: SYSTEM_TEXT } },
+    } as unknown as SessionEvent)
+
+    const snapshot = collector.snapshot(session, () => ({ totalTokens: 500, surfaceTokens: 300 }))
+    expect(snapshot.context.systemTokens).toBe(Math.ceil(SYSTEM_TEXT.length / 4) + 4)
+    // The legacy meter surface never contained the prompt: no deduction.
+    expect(snapshot.context.surfaceTokens).toBe(300)
+    expect(snapshot.context.systemBreakdown.other.chars).toBe(SYSTEM_TEXT.length)
   })
 })
 

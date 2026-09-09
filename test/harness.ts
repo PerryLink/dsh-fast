@@ -2,9 +2,9 @@
  * Shared test harness: REAL Cordis `Context`, REAL `SessionStore`/`Session`,
  * the REAL storage seam (dsh-storage + dsh-storage-json backend + the
  * dsh-storage-domain facility) rooted in a per-mount temp directory, the REAL
- * commands and tools registries (SystemPrompt/ToolRuntime/CommandRuntime), and
- * the REAL `TokenMeter` from the 0.1.2-rc.1 peers. Nothing here is a
- * hand-written mock of a service.
+ * commands and tools registries (SystemPrompt/ToolRuntime/CommandRuntime), the
+ * REAL `SessionProjection` registry, and the REAL `TokenMeter` from the
+ * 0.1.5-alpha.1 peers. Nothing here is a hand-written mock of a service.
  * @module dsh-fast/test/harness
  */
 
@@ -19,6 +19,7 @@ import { apply as domainApply, Config as domainConfig } from '@deepseek-ai/dsh-s
 import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
 import ToolRuntime from '@deepseek-ai/dsh-tools'
 import CommandRuntime from '@deepseek-ai/dsh-commands'
+import SessionProjection from '@deepseek-ai/dsh-session-projection'
 import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 
@@ -49,10 +50,16 @@ export async function mountBase(sessionId = 'fast-harness'): Promise<BaseHarness
   const root = await mkdtemp(path.join(tmpdir(), 'fast-test-'))
   await ctx.plugin({ apply: jsonApply, Config: jsonConfig, inject: ['storage'] }, { root })
   await ctx.plugin({ apply: domainApply, Config: domainConfig, inject: ['storage'] }, { backend: 'json' })
-  await ctx.plugin(SystemPrompt, { persona: '' })
+  await ctx.plugin(SystemPrompt, { personaPrefix: '' })
   await ctx.plugin(ToolRuntime)
   await ctx.plugin(CommandRuntime)
+  // TokenMeter injects `sessionProjections` on 0.1.5-alpha.1: without the
+  // registry it silently stays unmounted and the meter branch loses coverage.
+  await ctx.plugin(SessionProjection)
   await ctx.plugin(TokenMeter)
+  if (ctx.get('tokenMeter') === undefined) {
+    throw new Error('harness: TokenMeter did not mount (sessionProjections registry missing)')
+  }
   const agent = {
     session,
     status: 'idle',
