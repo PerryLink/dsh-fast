@@ -25,17 +25,16 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.3-alpha.1`（peer 钉在 `0.1.2-rc.1`）。
-0.1.2-rc.1（2026-09-02 已适配）：会话信封保留 ignorable 字段但仅用于存量日志读取兼容——Session.append 仍无法盖章，门控行为不变。已于 2026-09-06 对照 dsh-v0.1.3-alpha.1 master checkout 核验（全门控链 + profile 安装冒烟）。
+- DeepSeek Harness `dsh-v0.1.5-alpha.1`（2026-09-09 已适配；公开 tag commit `5dda764ed3`）：系统提示词改为 surface 节点 0（`system/message`）而不再放在请求信封里，因此报告从会话表面读取它，并把 token meter 的 surface 计价扣除系统提示词后再上报。已于 2026-09-09 用已发布的 `0.1.5-alpha.1` peers 核验（本地全门控链）；每月的 compat workflow 用同一钉号重跑 profile 安装冒烟。
 - Node `^22.19.0 || >=24.0.0`，纯 ESM（`"type": "module"`）。
-- peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.2`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0`）。
+- peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.2`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0`；devDependencies 钉 `0.1.5-alpha.1`）；`0.1.2-rc.1` 旧线仍通过结构式回退读取 pre-0.1.5 的 `header.system` 在运行时受支持。
 
 ## What you get
 
 - **会话加载耗时** —— 发布到首次请求的延迟，按 `open`（全新）/`restore`（带 seed/恢复）分类，并给出恢复时的 seed 事件数。
 - **spill 命中统计** —— 有多少工具结果被溢出到会话级工件（从持久化的 spill 提示标记检测）。
 - **compaction 次数与触发原因** —— 总次数，按 `manual`（斜杠命令）/`automatic`（压力）区分，以及总 shadow token 数。
-- **上下文注入体量** —— 系统提示词（AGENTS.md + 技能 + 人设）、工具 schema、会话表面的 token 数及其占比。
+- **上下文注入体量** —— 系统提示词（AGENTS.md + 技能 + 人设）、工具 schema、会话表面的 token 数及其占比；其中“会话表面”只含对话历史（`0.1.5-alpha.1` 的 meter surface 含系统节点，dsh-fast 已扣除）。
 - **LLM 缓存命中率** —— 由 provider usage 聚合的 input / cache-read / cache-write / output token 与命中率。
 - **优化建议** —— 阈值驱动的建议（精简技能、收紧工具 schema、更早压缩、启用提示词缓存、启用 spill-policy 等）。
 - **异步采样** —— 每个事件 O(1) 折叠，定时器采样，绝不在追加路径上执行。
@@ -106,7 +105,7 @@ dsh plugin --profile demo remove dsh-fast    # 卸载
 
 - **用存储域而非会话事件** —— rc.2 的 `Session.append` 没有 `ignorable` 标记能力，也没有外部事件注册面，写自定义 `fast/*` 会话事件会让持久化协调器在恢复时拒绝日志。因此度量改为持久化到存储域；原始事件仍是可重建的事实来源。
 - **spill 检测是启发式** —— 读取持久化的 spill 提示（`Full … stored at:`）；没有专门的会话事件。
-- **系统提示词是单个桶** —— AGENTS.md、技能目录与人设都属于组装后的系统提示词；header 不携带分段 token 统计，因此合并上报。
+- **系统提示词是单个桶** —— AGENTS.md、技能目录与人设都属于组装后的系统提示词；自 `0.1.5-alpha.1` 起它是 surface 节点 0（`system/message`），本身不携带分段 token 统计，因此合并上报。
 - **加载耗时从发布时刻起算** —— 恢复时的磁盘读取发生在 `session/created` 之前（由 `sessionPersistence` 负责），本插件允许的事件观察不到；上报的时长是发布到首次请求的延迟。
 
 ## Development

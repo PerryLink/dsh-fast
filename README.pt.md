@@ -23,17 +23,16 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.3-alpha.1` (peers fixados em `0.1.2-rc.1`).
-0.1.2-rc.1 (adaptado em 2026-09-02): o envelope de sessão mantém seu campo ignorable apenas para compatibilidade de leitura de logs armazenados - o Session.append ainda não consegue estampá-lo, então o comportamento da porta não muda. Verificado em 2026-09-06 contra o checkout master do dsh-v0.1.3-alpha.1 (cadeia completa de portas + smoke de instalação de profile).
+- DeepSeek Harness `dsh-v0.1.5-alpha.1` (adaptado em 2026-09-09; commit público da tag `5dda764ed3`): o system prompt agora é o nó 0 da superfície (um `system/message`) em vez de um campo do envelope da requisição, então o relatório o lê da superfície e desconta seu preço da superfície do token meter. Verificado em 2026-09-09 com os peers publicados `0.1.5-alpha.1` (cadeia completa de portas local); o workflow compat mensal repete o smoke de instalação de profile com os mesmos pins.
 - Node `^22.19.0 || >=24.0.0`, somente ESM (`"type": "module"`).
-- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, e `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` em `>=0.1.2-rc.1 <0.2.0`.
+- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, e `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` em `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0` (devDependencies fixam `0.1.5-alpha.1`); a linha `0.1.2-rc.1` continua suportada em execução por um fallback estrutural ao `header.system` anterior ao 0.1.5.
 
 ## What you get
 
 - **Tempo de carga da sessão** — latência publicação→primeira requisição, classificada `open` (nova) ou `restore` (com semente/retomada), mais a contagem de eventos de semente.
 - **Contagem de spill** — quantos resultados de ferramenta foram descarregados em um artefato de sessão (detectado pelo aviso persistente de spill).
 - **Contagem e motivo de compaction** — total, separado `manual` (comando) vs `automatic` (pressão), e total de tokens sombreados.
-- **Volume de contexto injetado** — tokens de system-prompt (AGENTS.md + skills + persona), schema de ferramentas e superfície, com suas proporções.
+- **Volume de contexto injetado** — tokens de system-prompt (AGENTS.md + skills + persona), schema de ferramentas e superfície, com suas proporções; a superfície é apenas histórico de conversa (no `0.1.5-alpha.1` a superfície do meter inclui o nó de sistema, que o dsh-fast desconta).
 - **Taxa de acertos do cache LLM** — tokens input / cache-read / cache-write / output agregados e a taxa derivada.
 - **Sugestões de otimização** — baseadas em limiares (cortar skills, ajustar schemas, compactar antes, ativar cache de prompts, ativar spill-policy…).
 - **Amostragem assíncrona** — dobra O(1) por evento; a amostragem roda em um timer, nunca no caminho de append.
@@ -104,7 +103,7 @@ O `dsh-fast` consome apenas seams públicos: eventos `session/*` e `agent/*`, o 
 
 - **Domínio de armazenamento, não eventos de sessão** — o `Session.append` do rc.2 não oferece marcador `ignorable` nem superfície de registro de eventos externa; um evento `fast/*` faria o coordenador de persistência recusar o log ao restaurar. As métricas vão ao domínio de armazenamento; os eventos brutos seguem como fonte reconstruível.
 - **A detecção de spill é heurística** — lê o aviso persistente (`Full … stored at:`); não há evento de sessão dedicado.
-- **O system prompt é um único balde** — AGENTS.md, skills e persona formam o system prompt montado; não há contagem por seção.
+- **O system prompt é um único balde** — AGENTS.md, skills e persona formam o system prompt montado; desde `0.1.5-alpha.1` é o nó 0 da superfície (um `system/message`) e não traz contagem por seção, então são reportados juntos.
 - **O tempo de carga começa na publicação** — a leitura de disco de uma restauração ocorre antes de `session/created`; a duração reportada é publicação→primeira requisição.
 
 ## Development

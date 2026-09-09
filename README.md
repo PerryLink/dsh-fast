@@ -26,16 +26,16 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.3-alpha.1` (adapted 2026-09-04): the session envelope keeps its ignorable field for stored-log read compatibility only - Session.append still cannot stamp it, so audit-gate behavior is unchanged. Verified 2026-09-06 against the dsh-v0.1.3-alpha.1 master checkout (full gate chain + profile install smoke).
+- DeepSeek Harness `dsh-v0.1.5-alpha.1` (adapted 2026-09-09; public tag commit `5dda764ed3`): the system prompt is surface node 0 (a `system/message`) instead of a request-envelope field, so the report reads it from the surface and prices the meter's surface net of it. Verified 2026-09-09 with the published `0.1.5-alpha.1` peers (full local gate chain); the monthly compat workflow re-runs the profile install smoke against the same pins.
 - Node `^22.19.0 || >=24.0.0`, ESM only (`"type": "module"`).
-- Peer dependencies: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` at `>=0.1.2-rc.1 <0.2.0`.
+- Peer dependencies: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` at `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0` (devDependencies pin `0.1.5-alpha.1`); the `0.1.2-rc.1` line stays supported at runtime through a structural fallback to the pre-0.1.5 `header.system`.
 
 ## What you get
 
 - **Session load timing** — publication-to-first-request latency, classified `open` (fresh) vs `restore` (seeded/resumed), plus the restored seed-event count.
 - **Spill-hit statistics** — how many tool results were spilled to a session-scoped artifact (detected from the durable spill notice).
 - **Compaction count and trigger** — total compactions, split `manual` (slash command) vs `automatic` (pressure), and total shadowed tokens.
-- **Context-injection volume** — system-prompt (AGENTS.md + skills + persona), tool-schema, and surface tokens with their shares of the total.
+- **Context-injection volume** — system-prompt (AGENTS.md + skills + persona), tool-schema, and surface tokens with their shares of the total; the surface bucket is conversation history only (the meter's surface includes the system node on `0.1.5-alpha.1`, which dsh-fast subtracts).
 - **LLM cache hit rate** — input / cache-read / cache-write / output tokens aggregated from provider usage, plus the derived hit rate.
 - **Optimization suggestions** — threshold-driven notes (trim skills, tighten tool schemas, compact earlier, enable prompt caching, enable spill-policy, …).
 - **Async sampling** — metrics are folded O(1) per event and snapshotted on a timer, never on the append path.
@@ -106,7 +106,7 @@ All tunables are Schemastery `Config` fields; invalid values fail the profile lo
 
 - **Storage domain, not session events** — rc.2 `Session.append` offers no `ignorable` marker and no external event-registration surface, so a custom `fast/*` session event would make the persistence coordinator refuse the log on restore. Metrics are therefore persisted to the storage domain; the raw events remain the reconstructable source of truth.
 - **Spill detection is heuristic** — it reads the durable spill notice (`Full … stored at:`); no dedicated session event exists.
-- **System prompt is one bucket** — AGENTS.md, skill directory, and persona are all part of the assembled system prompt; the header carries no per-section token accounting, so they are reported together.
+- **System prompt is one bucket** — AGENTS.md, skill directory, and persona are all part of the assembled system prompt; since `0.1.5-alpha.1` it is surface node 0 (a `system/message`) and carries no per-section token accounting, so they are reported together.
 - **Load timing starts at publication** — the disk-read portion of a restore happens before `session/created` (owned by `sessionPersistence`) and is not observable from this plugin's allowed events; the reported duration is publication-to-first-request.
 
 ## Development

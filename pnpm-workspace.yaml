@@ -4,7 +4,7 @@ packages:
 nodeLinker: hoisted
 onlyBuiltDependencies:
   - esbuild
-# The 0.1.1-rc.2 peer family may sit inside the registry's
+# The `@deepseek-ai/*` family may sit inside the registry's
 # minimum-release-age window; exclude the whole scope so installs resolve.
 minimumReleaseAgeExclude:
   - '@deepseek-ai/*'

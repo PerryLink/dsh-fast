@@ -23,17 +23,16 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.3-alpha.1` (peers `0.1.2-rc.1` पर पिन किए गए)।
-0.1.2-rc.1 (2026-09-02 को अनुकूलित): सत्र लिफ़ाफ़ा अपना ignorable फ़ील्ड केवल संग्रहीत-लॉग पठन संगतता के लिए रखता है - Session.append अभी भी इसे स्टैम्प नहीं कर सकता, इसलिए गेट व्यवहार अपरिवर्तित है। 2026-09-06 को dsh-v0.1.3-alpha.1 master checkout के विरुद्ध सत्यापित (पूर्ण गेट शृंखला + profile इंस्टॉल स्मोक)।
+- DeepSeek Harness `dsh-v0.1.5-alpha.1` (2026-09-09 को अनुकूलित; सार्वजनिक tag commit `5dda764ed3`): system prompt अब अनुरोध लिफ़ाफ़े के फ़ील्ड के बजाय सतह का नोड 0 (एक `system/message`) है, इसलिए रिपोर्ट उसे सतह से पढ़ती है और token meter की सतह से उसका मूल्य घटा देती है। 2026-09-09 को प्रकाशित `0.1.5-alpha.1` peers के साथ सत्यापित (पूर्ण स्थानीय गेट शृंखला); मासिक compat workflow उन्हीं pins के साथ profile इंस्टॉल स्मोक दोहराता है।
 - Node `^22.19.0 || >=24.0.0`, केवल ESM (`"type": "module"`)।
-- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, और `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` (`>=0.1.2-rc.1 <0.2.0`)।
+- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, और `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` (`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0`; devDependencies `0.1.5-alpha.1` पर पिन); `0.1.2-rc.1` पंक्ति रनटाइम पर pre-0.1.5 `header.system` के संरचनात्मक fallback से अभी भी समर्थित है।
 
 ## What you get
 
 - **सत्र लोड समय** — प्रकाशन→पहली अनुरोध विलंबता, `open` (नया) बनाम `restore` (seed/पुनः आरंभ) में वर्गीकृत, साथ में seed घटना गणना।
 - **spill हिट गणना** — कितने टूल परिणाम सत्र-स्कोप artifact में spill हुए (स्थायी spill सूचना से पता लगाया गया)।
 - **compaction गणना और कारण** — कुल, `manual` (कमांड) बनाम `automatic` (दबाव) में विभाजित, और कुल shadowed टोकन।
-- **इंजेक्ट किए गए संदर्भ की मात्रा** — system-prompt (AGENTS.md + skills + persona), टूल schema और सतह टोकन, उनके हिस्सों के साथ।
+- **इंजेक्ट किए गए संदर्भ की मात्रा** — system-prompt (AGENTS.md + skills + persona), टूल schema और सतह टोकन, उनके हिस्सों के साथ; सतह केवल बातचीत इतिहास है (`0.1.5-alpha.1` में meter की सतह में system नोड शामिल होता है, जिसे dsh-fast घटा देता है)।
 - **LLM कैश हिट दर** — provider usage से एकत्र input / cache-read / cache-write / output टोकन और व्युत्पन्न दर।
 - **अनुकूलन सुझाव** — थ्रेशोल्ड-आधारित (skills छाँटें, टूल schema कसें, पहले compact करें, प्रॉम्प्ट कैश सक्षम करें, spill-policy सक्षम करें…)।
 - **अतुल्यकालिक नमूनाकरण** — प्रति घटना O(1) fold; नमूनाकरण टाइमर पर चलता है, append पाथ पर कभी नहीं।
@@ -104,7 +103,7 @@ dsh plugin --profile demo remove dsh-fast    # हटाएँ
 
 - **स्टोरेज डोमेन, सत्र घटनाएँ नहीं** — rc.2 का `Session.append` `ignorable` मार्कर या बाहरी घटना-पंजीकरण सतह नहीं देता; कस्टम `fast/*` घटना पुनर्स्थापना पर लॉग को अस्वीकार करवा देती। इसलिए मेट्रिक्स स्टोरेज डोमेन में जाते हैं; कच्ची घटनाएँ पुनर्निर्माण-योग्य स्रोत बनी रहती हैं।
 - **spill पहचान अनुमानी है** — यह स्थायी सूचना (`Full … stored at:`) पढ़ती है; कोई समर्पित सत्र घटना नहीं है।
-- **system prompt एक ही बकेट है** — AGENTS.md, skills और persona असेंबल किए गए system prompt का हिस्सा हैं; header में प्रति-अनुभाग गणना नहीं होती।
+- **system prompt एक ही बकेट है** — AGENTS.md, skills और persona असेंबल किए गए system prompt का हिस्सा हैं; `0.1.5-alpha.1` से यह सतह का नोड 0 (एक `system/message`) है और प्रति-अनुभाग गणना नहीं रखता, इसलिए इन्हें एक साथ रिपोर्ट किया जाता है।
 - **लोड समय प्रकाशन से शुरू होता है** — पुनर्स्थापना का डिस्क-रीड `session/created` से पहले होता है; रिपोर्ट की गई अवधि प्रकाशन→पहली अनुरोध है।
 
 ## Development

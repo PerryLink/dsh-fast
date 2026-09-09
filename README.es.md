@@ -23,17 +23,16 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.3-alpha.1` (peers fijados a `0.1.2-rc.1`).
-0.1.2-rc.1 (adaptado el 2026-09-02): el sobre de sesión conserva su campo ignorable solo para compatibilidad de lectura de logs almacenados - Session.append aún no puede estamparlo, por lo que el comportamiento de la puerta no cambia. Verificado el 2026-09-06 contra el checkout master de dsh-v0.1.3-alpha.1 (cadena de puertas completa + smoke de instalación de profile).
+- DeepSeek Harness `dsh-v0.1.5-alpha.1` (adaptado el 2026-09-09; commit público de la etiqueta `5dda764ed3`): el system prompt es ahora el nodo 0 de la superficie (un `system/message`) en lugar de un campo del sobre de la petición, así que el informe lo lee de la superficie y descuenta su precio de la superficie del token meter. Verificado el 2026-09-09 con los peers publicados `0.1.5-alpha.1` (cadena de puertas local completa); el workflow compat mensual repite el smoke de instalación de profile con los mismos pines.
 - Node `^22.19.0 || >=24.0.0`, solo ESM (`"type": "module"`).
-- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, y `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` en `>=0.1.2-rc.1 <0.2.0`.
+- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, y `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` en `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0` (devDependencies fijan `0.1.5-alpha.1`); la línea `0.1.2-rc.1` sigue soportada en ejecución mediante un fallback estructural al `header.system` anterior a 0.1.5.
 
 ## What you get
 
 - **Tiempo de carga de sesión** — latencia publicación→primera petición, clasificada `open` (nueva) o `restore` (con semilla/reanudada), más el número de eventos semilla.
 - **Recuento de spill** — cuántos resultados de herramienta se volcaron a un artefacto de sesión (detectado por el aviso persistente de spill).
 - **Recuento y motivo de compaction** — total, separado `manual` (comando) vs `automatic` (presión), y tokens sombreados totales.
-- **Volumen de contexto inyectado** — tokens de system-prompt (AGENTS.md + skills + persona), schema de herramientas y superficie, con sus porcentajes.
+- **Volumen de contexto inyectado** — tokens de system-prompt (AGENTS.md + skills + persona), schema de herramientas y superficie, con sus porcentajes; la superficie es solo historial de conversación (en `0.1.5-alpha.1` la superficie del meter incluye el nodo de sistema, que dsh-fast descuenta).
 - **Tasa de aciertos de caché LLM** — tokens input / cache-read / cache-write / output agregados y la tasa derivada.
 - **Sugerencias de optimización** — basadas en umbrales (recortar skills, ajustar schemas, compactar antes, activar caché de prompts, activar spill-policy…).
 - **Muestreo asíncrono** — plegado O(1) por evento; el muestreo corre en un temporizador, nunca en la ruta de append.
@@ -104,7 +103,7 @@ Todos los ajustes son campos Schemastery `Config`; valores inválidos fallan la 
 
 - **Dominio de almacenamiento, no eventos de sesión** — el `Session.append` de rc.2 no ofrece marcador `ignorable` ni superficie de registro de eventos externa; un evento `fast/*` haría que el coordinador de persistencia rechace el log al restaurar. Las métricas van al dominio de almacenamiento; los eventos crudos siguen siendo la fuente reconstruible.
 - **La detección de spill es heurística** — lee el aviso persistente (`Full … stored at:`); no hay evento de sesión dedicado.
-- **El system prompt es un solo cajón** — AGENTS.md, skills y persona forman el system prompt ensamblado; no hay contabilidad por sección.
+- **El system prompt es un solo cajón** — AGENTS.md, skills y persona forman el system prompt ensamblado; desde `0.1.5-alpha.1` es el nodo 0 de la superficie (un `system/message`) y no trae contabilidad por sección, así que se reportan juntos.
 - **El tiempo de carga empieza en la publicación** — la lectura de disco de una restauración ocurre antes de `session/created`; la duración reportada es publicación→primera petición.
 
 ## Development

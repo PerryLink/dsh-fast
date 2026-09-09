@@ -21,7 +21,7 @@ body:
     attributes:
       label: DeepSeek Harness version
       description: The harness (`dsh`) version you are running.
-      placeholder: e.g. 0.1.1-rc.2
+      placeholder: e.g. 0.1.5-alpha.1
     validations:
       required: true
 

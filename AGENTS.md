@@ -6,13 +6,13 @@ Standalone DeepSeek Harness plugin repository (`dsh-fast`). Development follows 
 
 - `src/index.ts` — function-plugin contract (`name`/`inject`/`Config`/`apply`; NO default export). Injects `commands`, `tools`, and `storageDomain`. Async `apply`: resolves config, opens the `dsh_fast` domain, assembles the collector and the report surfaces, registers one `ctx.effect` that owns the sampling timer plus the domain teardown, and listens on `session/created`, `session/event`, and `session/disposed`.
 - `src/config.ts` — Schemastery schema + explicit `resolveConfig` (no hidden `?? default` in run paths). Numeric bounds fail loud at mount.
-- `src/collector.ts` — the event→snapshot fold over a real `Session`; all inline work is O(1) per event. The optional token meter is consulted only in `snapshot()`.
+- `src/collector.ts` — the event→snapshot fold over a real `Session`; all inline work is O(1) per event. The optional token meter is consulted only in `snapshot()`, which reads the effective system prompt from the surface (`system/message`, surface node 0 on 0.1.5-alpha.1) and falls back to the legacy `header.system` string on the `0.1.2-rc.1` line.
 - `src/analyze.ts` — pure report assembly: threshold-driven suggestions, `/fast` text rendering, and final report sanitization.
 - `src/store.ts` — the `dsh_fast` storage-domain declaration (zod value schema) and the bounded-history append.
 - `src/estimate.ts` — the fixed-density heuristic that mirrors `@deepseek-ai/dsh-token-meter`'s estimator (not exported as a public subpath).
 - `src/sanitize.ts` — pure display/durable-boundary sanitization.
 - `scripts/` — `prepare.mjs` (build), `verify-self-contained.mjs`, `verify-artifacts.mjs`, `check-readme-sync.mjs` (five-language gate), `release.mjs` (bump + stamp + gate + commit + tag, never pushes), `changelog-section.mjs`.
-- `test/` — vitest; REAL `Context`/`SessionStore`/`Session`/`ToolRuntime`/`CommandRuntime`/`TokenMeter` and the REAL storage seam (dsh-storage + dsh-storage-json + dsh-storage-domain) from the 0.1.2-rc.1 peers. Only the optional token-meter measure function is scripted.
+- `test/` — vitest; REAL `Context`/`SessionStore`/`Session`/`ToolRuntime`/`CommandRuntime`/`SessionProjection`/`TokenMeter` and the REAL storage seam (dsh-storage + dsh-storage-json + dsh-storage-domain) from the `0.1.5-alpha.1` peers. Only the optional token-meter measure function is scripted. The harness mounts `SessionProjection` because `TokenMeter` injects `sessionProjections` on 0.1.5-alpha.1 (otherwise it silently stays unmounted).
 
 ## Hard rules applied here
 
@@ -26,7 +26,7 @@ Standalone DeepSeek Harness plugin repository (`dsh-fast`). Development follows 
 
 `pnpm run typecheck && pnpm run typecheck:ci && pnpm test && pnpm run build && pnpm run verify:self-contained && pnpm run verify:artifacts && node scripts/check-readme-sync.mjs && pnpm pack`
 
-- `typecheck` resolves `@deepseek-ai/*` through the installed 0.1.2-rc.1 peers; `typecheck:ci` clears `skipLibCheck` and enables `verbatimModuleSyntax` against the published types. Both must stay green.
+- `typecheck` resolves `@deepseek-ai/*` through the installed `0.1.5-alpha.1` peers; `typecheck:ci` clears `skipLibCheck` and enables `verbatimModuleSyntax` against the published types. Both must stay green.
 
 ## Release
 
