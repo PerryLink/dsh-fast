@@ -24,9 +24,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.5-alpha.1` (2026-09-09 को अनुकूलित; सार्वजनिक tag commit `5dda764ed3`): system prompt अब अनुरोध लिफ़ाफ़े के फ़ील्ड के बजाय सतह का नोड 0 (एक `system/message`) है, इसलिए रिपोर्ट उसे सतह से पढ़ती है और token meter की सतह से उसका मूल्य घटा देती है। 2026-09-09 को प्रकाशित `0.1.5-alpha.1` peers के साथ सत्यापित (पूर्ण स्थानीय गेट शृंखला); मासिक compat workflow उन्हीं pins के साथ profile इंस्टॉल स्मोक दोहराता है।
+- DeepSeek Harness `dsh-v0.1.5-rc.1` (2026-09-09 को अनुकूलित; सार्वजनिक tag commit `183f08e9c6`): system prompt अब अनुरोध लिफ़ाफ़े के फ़ील्ड के बजाय सतह का नोड 0 (एक `system/message`) है, इसलिए रिपोर्ट उसे सतह से पढ़ती है और token meter की सतह से उसका मूल्य घटा देती है। 2026-09-10 को प्रकाशित `0.1.5-rc.1` peers के साथ सत्यापित (पूर्ण स्थानीय गेट शृंखला); मासिक compat workflow उन्हीं pins के साथ profile इंस्टॉल स्मोक दोहराता है।
 - Node `^22.19.0 || >=24.0.0`, केवल ESM (`"type": "module"`)।
-- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, और `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` (`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0`; devDependencies `0.1.5-alpha.1` पर पिन); `0.1.2-rc.1` पंक्ति रनटाइम पर pre-0.1.5 `header.system` के संरचनात्मक fallback से अभी भी समर्थित है।
+- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, और `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` (`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0`; devDependencies `0.1.5-rc.1` पर पिन); `0.1.2-rc.1` पंक्ति रनटाइम पर pre-0.1.5 `header.system` के संरचनात्मक fallback से अभी भी समर्थित है।
 
 ## What you get
 
