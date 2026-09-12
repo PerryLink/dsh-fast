@@ -26,9 +26,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.5-rc.1`（2026-09-09 已适配；公开 tag commit `183f08e9c6`）：系统提示词改为 surface 节点 0（`system/message`）而不再放在请求信封里，因此报告从会话表面读取它，并把 token meter 的 surface 计价扣除系统提示词后再上报。已于 2026-09-10 用已发布的 `0.1.5-rc.1` peers 核验（本地全门控链）；每月的 compat workflow 用同一钉号重跑 profile 安装冒烟。
+- DeepSeek Harness `dsh-v0.1.5-rc.2`（2026-09-09 已适配；公开 tag commit `fb2c4b9e69`）：系统提示词改为 surface 节点 0（`system/message`）而不再放在请求信封里，因此报告从会话表面读取它，并把 token meter 的 surface 计价扣除系统提示词后再上报。已于 2026-09-11 用已发布的 `0.1.5-rc.2` peers 核验（本地全门控链）；每月的 compat workflow 用同一钉号重跑 profile 安装冒烟。
 - Node `^22.19.0 || >=24.0.0`，纯 ESM（`"type": "module"`）。
-- peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.2`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0`；devDependencies 钉 `0.1.5-rc.1`）；`0.1.2-rc.1` 旧线仍通过结构式回退读取 pre-0.1.5 的 `header.system` 在运行时受支持。
+- peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.2`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0`；devDependencies 钉 `0.1.5-rc.2`）；`0.1.2-rc.1` 旧线仍通过结构式回退读取 pre-0.1.5 的 `header.system` 在运行时受支持。
 
 ## What you get
 

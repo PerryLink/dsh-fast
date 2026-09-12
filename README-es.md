@@ -24,9 +24,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.5-rc.1` (adaptado el 2026-09-09; commit público de la etiqueta `183f08e9c6`): el system prompt es ahora el nodo 0 de la superficie (un `system/message`) en lugar de un campo del sobre de la petición, así que el informe lo lee de la superficie y descuenta su precio de la superficie del token meter. Verificado el 2026-09-10 con los peers publicados `0.1.5-rc.1` (cadena de puertas local completa); el workflow compat mensual repite el smoke de instalación de profile con los mismos pines.
+- DeepSeek Harness `dsh-v0.1.5-rc.2` (adaptado el 2026-09-09; commit público de la etiqueta `fb2c4b9e69`): el system prompt es ahora el nodo 0 de la superficie (un `system/message`) en lugar de un campo del sobre de la petición, así que el informe lo lee de la superficie y descuenta su precio de la superficie del token meter. Verificado el 2026-09-11 con los peers publicados `0.1.5-rc.2` (cadena de puertas local completa); el workflow compat mensual repite el smoke de instalación de profile con los mismos pines.
 - Node `^22.19.0 || >=24.0.0`, solo ESM (`"type": "module"`).
-- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, y `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` en `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0` (devDependencies fijan `0.1.5-rc.1`); la línea `0.1.2-rc.1` sigue soportada en ejecución mediante un fallback estructural al `header.system` anterior a 0.1.5.
+- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, y `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` en `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0` (devDependencies fijan `0.1.5-rc.2`); la línea `0.1.2-rc.1` sigue soportada en ejecución mediante un fallback estructural al `header.system` anterior a 0.1.5.
 
 ## What you get
 

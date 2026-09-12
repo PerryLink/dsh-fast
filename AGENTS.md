@@ -12,7 +12,7 @@ Standalone DeepSeek Harness plugin repository (`dsh-fast`). Development follows 
 - `src/estimate.ts` — the fixed-density heuristic that mirrors `@deepseek-ai/dsh-token-meter`'s estimator (not exported as a public subpath).
 - `src/sanitize.ts` — pure display/durable-boundary sanitization.
 - `scripts/` — `prepare.mjs` (build), `verify-self-contained.mjs`, `verify-artifacts.mjs`, `check-readme-sync.mjs` (five-language gate), `release.mjs` (bump + stamp + gate + commit + tag, never pushes), `changelog-section.mjs`.
-- `test/` — vitest; REAL `Context`/`SessionStore`/`Session`/`ToolRuntime`/`CommandRuntime`/`SessionProjection`/`TokenMeter` and the REAL storage seam (dsh-storage + dsh-storage-json + dsh-storage-domain) from the `0.1.5-rc.1` peers. Only the optional token-meter measure function is scripted. The harness mounts `SessionProjection` because `TokenMeter` injects `sessionProjections` on 0.1.5-alpha.1 (otherwise it silently stays unmounted).
+- `test/` — vitest; REAL `Context`/`SessionStore`/`Session`/`ToolRuntime`/`CommandRuntime`/`SessionProjection`/`TokenMeter` and the REAL storage seam (dsh-storage + dsh-storage-json + dsh-storage-domain) from the `0.1.5-rc.2` peers. Only the optional token-meter measure function is scripted. The harness mounts `SessionProjection` because `TokenMeter` injects `sessionProjections` on 0.1.5-alpha.1 (otherwise it silently stays unmounted).
 
 ## Hard rules applied here
 
@@ -26,7 +26,7 @@ Standalone DeepSeek Harness plugin repository (`dsh-fast`). Development follows 
 
 `pnpm run typecheck && pnpm run typecheck:ci && pnpm test && pnpm run build && pnpm run verify:self-contained && pnpm run verify:artifacts && node scripts/check-readme-sync.mjs && pnpm pack`
 
-- `typecheck` resolves `@deepseek-ai/*` through the installed `0.1.5-rc.1` peers; `typecheck:ci` clears `skipLibCheck` and enables `verbatimModuleSyntax` against the published types. Both must stay green.
+- `typecheck` resolves `@deepseek-ai/*` through the installed `0.1.5-rc.2` peers; `typecheck:ci` clears `skipLibCheck` and enables `verbatimModuleSyntax` against the published types. Both must stay green.
 
 ## Release
 
