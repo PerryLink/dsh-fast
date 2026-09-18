@@ -25,9 +25,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.5-rc.2` (2026-09-09 को अनुकूलित; सार्वजनिक tag commit `fb2c4b9e69`): system prompt अब अनुरोध लिफ़ाफ़े के फ़ील्ड के बजाय सतह का नोड 0 (एक `system/message`) है, इसलिए रिपोर्ट उसे सतह से पढ़ती है और token meter की सतह से उसका मूल्य घटा देती है। 2026-09-11 को प्रकाशित `0.1.5-rc.2` peers के साथ सत्यापित (पूर्ण स्थानीय गेट शृंखला); मासिक compat workflow उन्हीं pins के साथ profile इंस्टॉल स्मोक दोहराता है।
+- DeepSeek Harness `dsh-v0.1.6-alpha.2` (2026-09-18 को अनुकूलित): सत्र सतह अब वैकल्पिक `sessionQuery` सेवा से पढ़ी जाती है — पदावनत सिंक्रोनस `Session.eventAt(seq)` एक्सेसर हट गया और उसकी जगह समतुल्य सिंक्रोनस रीड fallback है — और सभी रजिस्ट्रेशन अब एक ही lifecycle effect में रहते हैं जो उन्हें उल्टे क्रम में मुक्त करता है। आंतरिक बदलाव: एक ही लॉग पर मेट्रिक्स बिल्कुल समान रहते हैं। 2026-09-18 को स्थानीय गेट शृंखला (दोहरा typecheck + 70 टेस्ट) से सत्यापित; compat workflow प्रकाशित pins के साथ profile इंस्टॉल स्मोक दोहराता है।
 - Node `^22.19.0 || >=24.0.0`, केवल ESM (`"type": "module"`)।
-- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, और `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` (`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0`; devDependencies `0.1.5-rc.2` पर पिन); `0.1.2-rc.1` पंक्ति रनटाइम पर pre-0.1.5 `header.system` के संरचनात्मक fallback से अभी भी समर्थित है।
+- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, और `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` (`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0`; devDependencies `0.1.5-rc.2` पर पिन); `0.1.2-rc.1` पंक्ति रनटाइम पर pre-0.1.5 `header.system` के संरचनात्मक fallback से अभी भी समर्थित है।
 
 ## What you get
 
@@ -107,6 +107,7 @@ dsh plugin --profile demo remove dsh-fast    # हटाएँ
 - **spill पहचान अनुमानी है** — यह स्थायी सूचना (`Full … stored at:`) पढ़ती है; कोई समर्पित सत्र घटना नहीं है।
 - **system prompt एक ही बकेट है** — AGENTS.md, skills और persona असेंबल किए गए system prompt का हिस्सा हैं; `0.1.5-alpha.1` से यह सतह का नोड 0 (एक `system/message`) है और प्रति-अनुभाग गणना नहीं रखता, इसलिए इन्हें एक साथ रिपोर्ट किया जाता है।
 - **लोड समय प्रकाशन से शुरू होता है** — पुनर्स्थापना का डिस्क-रीड `session/created` से पहले होता है; रिपोर्ट की गई अवधि प्रकाशन→पहली अनुरोध है।
+- **गिरावट की सूचना एक बार दी जाती है** — `tokenMeter` न होने पर ह्यूरिस्टिक टोकन मूल्यांकन, `systemPrompt` न होने पर पूरा प्रॉम्प्ट एक ही बाल्टी में, और विफल `inspector` आउटलेट अनदेखा; अब इनमें से प्रत्येक प्रति प्रक्रिया एक बार बताता है, चुपचाप संख्याओं का अर्थ नहीं बदलता।
 
 ## Development
 

@@ -5,6 +5,26 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Read the session surface through the optional `sessionQuery` service instead of the deprecated synchronous `Session.eventAt(seq)` accessor (the peer set gains `@deepseek-ai/dsh-session-query`). A host that composes no `sessionQuery` keeps working through an equivalent synchronous read resolved from one accepted-log snapshot; a failing async read degrades to it with one warning. Internal implementation change: the reported metrics are byte-identical for the same log.
+- All registrations and resources (the `/fast` command, the `fast_report` tool, the three session listeners, the sampling timer, and the storage domain) now live in one lifecycle effect whose disposer releases them in reverse order. Before this, an unmount that raced `apply` could lose the command and the tool for the rest of the process and leak the domain handle — a disable/enable round trip now restores both, exactly once.
+- Declare `dsh.manifestVersion: 1` and the canonical three-clause `engines.dsh` range.
+
+### Added
+
+- An optional `ctx.inspector` metrics outlet (read structurally, never injected, never the only outlet: every metric stays available through `/fast` and `fast_report`). Metric publishing to it is best-effort and cannot break a report.
+
+### Fixed
+
+- Degradation paths are no longer silent: a missing token meter (heuristic token pricing) or a missing system-prompt service (single-bucket attribution) is announced once per process instead of quietly changing what the numbers mean. A failing inspector outlet is announced once too, with the report surfaces unaffected.
+
+### Notes
+
+- Upstream follow-up (recorded, not implemented): once `ctx.inspector` leaves experimental status, the self-built metric publishing here can be folded into it. The structural read above is deliberately tolerant so that change stays local.
+
 ## [0.2.12] - 2026-09-12
 
 ### Changed
