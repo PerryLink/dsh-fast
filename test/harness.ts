@@ -40,9 +40,16 @@ export interface BaseHarness {
  * minimal agent for scoped command/tool resolution. The storage backend is the
  * real JSON backend rooted in a fresh temp directory.
  * @param sessionId - session id to create (defaults to `fast-harness`).
+ * @param options.withTokenMeter - compose the TokenMeter service (default true;
+ *   false exercises the documented heuristic-token degradation).
+ * @param options.withSystemPrompt - compose the SystemPrompt service (default
+ *   true; false exercises the single-bucket degradation).
  * @returns the mounted base.
  */
-export async function mountBase(sessionId = 'fast-harness'): Promise<BaseHarness> {
+export async function mountBase(
+  sessionId = 'fast-harness',
+  options: { withTokenMeter?: boolean; withSystemPrompt?: boolean } = {},
+): Promise<BaseHarness> {
   const ctx = new Context()
   await ctx.plugin(SessionStore)
   const session = ctx.sessions.create(SessionId(sessionId))
@@ -50,15 +57,17 @@ export async function mountBase(sessionId = 'fast-harness'): Promise<BaseHarness
   const root = await mkdtemp(path.join(tmpdir(), 'fast-test-'))
   await ctx.plugin({ apply: jsonApply, Config: jsonConfig, inject: ['storage'] }, { root })
   await ctx.plugin({ apply: domainApply, Config: domainConfig, inject: ['storage'] }, { backend: 'json' })
-  await ctx.plugin(SystemPrompt, { personaPrefix: '' })
+  if (options.withSystemPrompt !== false) await ctx.plugin(SystemPrompt, { personaPrefix: '' })
   await ctx.plugin(ToolRuntime)
   await ctx.plugin(CommandRuntime)
-  // TokenMeter injects `sessionProjections` on 0.1.5-alpha.1: without the
-  // registry it silently stays unmounted and the meter branch loses coverage.
-  await ctx.plugin(SessionProjection)
-  await ctx.plugin(TokenMeter)
-  if (ctx.get('tokenMeter') === undefined) {
-    throw new Error('harness: TokenMeter did not mount (sessionProjections registry missing)')
+  if (options.withTokenMeter !== false) {
+    // TokenMeter injects `sessionProjections` on 0.1.5-alpha.1: without the
+    // registry it silently stays unmounted and the meter branch loses coverage.
+    await ctx.plugin(SessionProjection)
+    await ctx.plugin(TokenMeter)
+    if (ctx.get('tokenMeter') === undefined) {
+      throw new Error('harness: TokenMeter did not mount (sessionProjections registry missing)')
+    }
   }
   const agent = {
     session,

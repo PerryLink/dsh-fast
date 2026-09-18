@@ -6,6 +6,8 @@
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { SessionId } from '@deepseek-ai/dsh-session'
+import type { Agent } from '@deepseek-ai/dsh-agent'
 import { mountBase, unmountBase, type BaseHarness } from './harness.ts'
 
 const fibers: Array<{ dispose(): Promise<void> }> = []
@@ -51,5 +53,42 @@ describe('apply', () => {
     await mountPlugin(base, { enabled: false })
     expect(base.ctx.tools.get('fast_report')).toBeUndefined()
     expect(base.ctx.commands.find(base.agent, 'fast')).toBeUndefined()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// P1 invariant: every degradation decision is explicit, visible, and pinned
+// ---------------------------------------------------------------------------
+
+describe('degradation invariants', () => {
+  it('degrades visibly on a host without a token meter: the report still serves with heuristic buckets', async () => {
+    // A host with no tokenMeter: the documented heuristic fallback is taken.
+    // The report must still serve (never a hard failure) and must label the
+    // numbers as heuristic. (`systemPrompt` is deliberately NOT omitted here:
+    // ToolRuntime injects it, so a host without it mounts no `tools` service at
+    // all and this plugin stays pending — the systemPrompt branch is defensive
+    // only.) The once-per-key warning behaviour is pinned in notices.spec.ts.
+    const base = await mountBase('index-degradation', { withTokenMeter: false })
+    bases.push(base)
+    await mountPlugin(base)
+    // The collector only tracks sessions created while the plugin is mounted.
+    const live = base.ctx.sessions.create(SessionId('index-degradation-live'))
+    const agent = { session: live, status: 'idle', options: {}, reserveTurnAdmission: () => () => undefined } as unknown as Agent
+    const execution = await base.ctx.commands.execute(agent, '/fast', [], new AbortController().signal)
+    expect(execution?.result.kind).toBe('success')
+    const text = String((execution?.result as { text?: string } | undefined)?.text ?? '')
+    expect(text).toContain('dsh-fast')
+    expect(text.toLowerCase()).toContain('heuristic')
+  })
+
+  it('always reports spill detection as a documented heuristic, never a hard signal', async () => {
+    const base = await mountBase('index-heuristic-invariant')
+    bases.push(base)
+    await mountPlugin(base)
+    const execution = await base.ctx.commands.execute(base.agent, '/fast', [], new AbortController().signal)
+    expect(execution?.result.kind).toBe('success')
+    // The rendered report labels the spill counter as heuristic in the same
+    // breath as the number, so a zero can never be read as "proven clean".
+    expect(String((execution?.result as { text?: string }).text ?? '')).toMatch(/heuristic/i)
   })
 })

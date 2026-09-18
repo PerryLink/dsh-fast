@@ -24,8 +24,9 @@ import { FastCollector } from './collector.ts'
 import type { MeasureFn, TokenMeasurement } from './collector.ts'
 import type { SystemSection } from './estimate.ts'
 import { buildReport, renderFastText } from './analyze.ts'
-import type { FastReport } from './model.ts'
+import type { FastReport, FastSnapshot } from './model.ts'
 import { fastDomainSpec, appendSample } from './store.ts'
+import { createOnceNotifier } from './notices.ts'
 import { VERSION } from './version.ts'
 
 export const name = 'fast'
@@ -71,6 +72,16 @@ interface SessionQueryService {
 }
 
 /**
+ * Structural face of the optional (experimental) `inspector` service. Read
+ * structurally on purpose: the service must never be injected, and it is an
+ * extra outlet beside the report surfaces — never the only one, so a host
+ * without it keeps every metric available through `/fast` and `fast_report`.
+ */
+interface InspectorLike {
+  publish(topic: string, payload: unknown, monotonicMs?: number): void
+}
+
+/**
  * Mount the diagnostics. The resolved config is validated first (fail loud);
  * with `enabled: false` the plugin registers nothing and stays inert.
  * @param ctx - the plugin context (host).
@@ -88,13 +99,40 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
   const domain = await ctx.storageDomain.open(fastDomainSpec)
   const sessions = domain.table('sessions')
 
+  /**
+   * One-time visible degradation notices: a subsystem fallback that used to be
+   * silent now says so once per process, so a report built from heuristics is
+   * never mistaken for a measured one.
+   */
+  const warnFallbackOnce = createOnceNotifier(message => logger.warn(message))
+
+  /** The optional metrics outlet; a no-op when the service is absent or throws. */
+  const inspector = ctx.get('inspector') as unknown as InspectorLike | undefined
+  const publishSnapshot = (session: Session, snapshot: FastSnapshot): void => {
+    if (inspector === undefined || typeof inspector.publish !== 'function') return
+    try {
+      inspector.publish('dsh-fast/snapshot', { sessionId: session.id, snapshot })
+    } catch (error) {
+      warnFallbackOnce(
+        'inspector',
+        `inspector metric outlet failed, continuing with the report surfaces only: ${error instanceof Error ? error.message : String(error)}`,
+      )
+    }
+  }
+
   // Consumer — the report paths use the optional tokenMeter/systemPrompt
   // services at call time; the /fast handler and the fast_report execute turn
   // the measurements into the model-visible report.
   /** Lazy, contained lookup of the optional token meter. */
   const measure: MeasureFn = (session) => {
     const meter = ctx.get('tokenMeter') as unknown as TokenMeterService | undefined
-    if (meter === undefined) return undefined
+    if (meter === undefined) {
+      warnFallbackOnce(
+        'tokenMeter',
+        'tokenMeter is not composed: total/surface tokens fall back to the fixed-density heuristic (spill and compaction counters stay exact)',
+      )
+      return undefined
+    }
     try {
       const measurement = meter.measure(session)
       return { totalTokens: measurement.totalTokens, surfaceTokens: measurement.surfaceTokens }
@@ -107,7 +145,13 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
   /** Assemble the named system-prompt sections for the per-section breakdown. */
   const assembleSections = async (): Promise<readonly SystemSection[] | undefined> => {
     const systemPrompt = ctx.get('systemPrompt') as unknown as SystemPromptService | undefined
-    if (systemPrompt === undefined) return undefined
+    if (systemPrompt === undefined) {
+      warnFallbackOnce(
+        'systemPrompt',
+        'systemPrompt is not composed: the whole rendered prompt is attributed to the "other" bucket instead of the per-section breakdown',
+      )
+      return undefined
+    }
     try {
       const assembly = await systemPrompt.assemble()
       return assembly.sections.map(section => ({ name: section.name, text: section.text }))
@@ -141,6 +185,7 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
   /** Build the complete report for one session. */
   const reportFor = async (session: Session): Promise<FastReport> => {
     const snapshot = collector.snapshot(session, measure, await assembleSections(), await readSurfaceEvents(session))
+    publishSnapshot(session, snapshot)
     return buildReport(
       snapshot,
       {
@@ -156,6 +201,7 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
   /** Append one snapshot to the session's durable history (fire-and-forget). */
   const persist = async (session: Session): Promise<void> => {
     const snapshot = collector.snapshot(session, measure, await assembleSections(), await readSurfaceEvents(session))
+    publishSnapshot(session, snapshot)
     const next = appendSample(sessions.get(session.id), { at: Date.now(), snapshot }, resolved.maxHistorySamples)
     void sessions.put(session.id, next).catch((error: unknown) => {
       logger.warn(`session "${session.id}": persist failed: ${error instanceof Error ? error.message : String(error)}`)
