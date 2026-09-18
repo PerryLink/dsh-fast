@@ -16,8 +16,9 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
 import { defineTool } from '@deepseek-ai/dsh-tools'
-// Type-only: registers the `ctx.commands` Context merge for the inject.
-import type {} from '@deepseek-ai/dsh-commands'
+// Type-only: registers the `ctx.commands` Context merge for the inject, plus the
+// command definition/invocation faces the registration below is typed against.
+import type { CommandDefinition, CommandInvocation } from '@deepseek-ai/dsh-commands'
 import { Config, resolveConfig } from './config.ts'
 import { FastCollector } from './collector.ts'
 import type { MeasureFn, TokenMeasurement } from './collector.ts'
@@ -161,20 +162,21 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
     })
   }
 
-  // Human slash command: the on-demand report.
-  ctx.commands.register({
+  // Human slash command: the on-demand report. The definition is registered
+  // inside the single lifecycle effect below, which owns every registration.
+  const fastCommand = {
     name: 'fast',
     description: 'Print the dsh-fast performance report for the active session.',
-    async handler(invocation) {
+    async handler(invocation: CommandInvocation) {
       const report = await reportFor(invocation.agent.session)
       return { kind: 'success', text: renderFastText(report) }
     },
-  })
+  } satisfies CommandDefinition
 
   // Model tool: the same report as structured data.
-  // Service Provider — ctx.tools.register mounts the fast_report tool (the
+  // Service Provider — the lifecycle effect mounts the fast_report tool (the
   // /fast slash command above registers on ctx.commands).
-  ctx.tools.register(defineTool({
+  const fastReportTool = defineTool({
     name: 'fast_report',
     description: 'Return the current dsh-fast performance report for the active session: session load timing, spill hits, compaction count and trigger, context-injection volume (AGENTS.md/skills/tool-schema token share), LLM cache hit rate, and optimization suggestions.',
     parameters: {},
@@ -267,25 +269,32 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
       }
       return await reportFor(session)
     },
-  }))
-
-  // Session lifecycle: adopt and fold.
-  ctx.on('session/created', (session: Session) => {
-    collector.handleSessionCreated(session)
-  })
-  ctx.on('session/disposed', (session: Session) => {
-    collector.handleSessionDisposed(session)
-  })
-  ctx.on('session/event', (session: Session, event: SessionEvent) => {
-    try {
-      collector.handleEvent(session, event)
-    } catch (error) {
-      logger.warn(`session "${session.id}": event handling failed: ${error instanceof Error ? error.message : String(error)}`)
-    }
   })
 
-  // Async sampling: one effect owns the timer and the domain teardown.
+  // One effect owns every registration and resource: the /fast command, the
+  // fast_report tool, the three session listeners, the sampling timer and the
+  // domain handle. The disposer tears them down in reverse registration order
+  // (timer → listeners → tool → command → domain close), so an unmount during
+  // apply can neither lose a registration nor leak the domain — the previous
+  // shape registered all five outside any effect and had nothing to roll back.
   ctx.effect(() => {
+    const disposers: Array<() => void> = [
+      ctx.commands.register(fastCommand),
+      ctx.tools.register(fastReportTool),
+      ctx.on('session/created', (session: Session) => {
+        collector.handleSessionCreated(session)
+      }),
+      ctx.on('session/disposed', (session: Session) => {
+        collector.handleSessionDisposed(session)
+      }),
+      ctx.on('session/event', (session: Session, event: SessionEvent) => {
+        try {
+          collector.handleEvent(session, event)
+        } catch (error) {
+          logger.warn(`session "${session.id}": event handling failed: ${error instanceof Error ? error.message : String(error)}`)
+        }
+      }),
+    ]
     const timer = setInterval(() => {
       for (const session of collector.liveSessions()) {
         if (!collector.isDirty(session)) continue
@@ -295,6 +304,7 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
     }, resolved.snapshotIntervalMs)
     return async () => {
       clearInterval(timer)
+      for (const dispose of disposers.reverse()) dispose()
       await domain.close()
     }
   })
