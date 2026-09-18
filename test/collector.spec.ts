@@ -16,6 +16,7 @@ import {
   flattenToolResultText,
   hitRateOf,
   sharesOf,
+  surfaceEventsOf,
 } from '../src/collector.ts'
 import { resolveConfig } from '../src/config.ts'
 import { appendAny } from './harness.ts'
@@ -97,6 +98,54 @@ describe('collector load, spill, and cache', () => {
     expect(snapshot.context.surfaceTokens).toBe(300 - snapshot.context.systemTokens)
     expect(snapshot.context.systemBreakdown.other.chars).toBe(SYSTEM_TEXT.length)
     expect(snapshot.context.totalTokens).toBe(1_000)
+  })
+})
+
+describe('collector system-prompt accounting (A2 surface-read migration)', () => {
+  it('reports byte-identical metrics through the async surface read and the sync fallback', () => {
+    // Golden comparison for the P0-1 migration: the deprecated
+    // `Session.eventAt(seq)` read is gone, so the two remaining paths — the
+    // `sessionQuery.readSurface` events the plugin passes in, and the
+    // collector's own synchronous fallback — must agree on every metric for
+    // one and the same log.
+    const session = Session.create(SessionId('collector-surface-parity'))
+    const collector = new FastCollector(resolveConfig({}))
+    collector.handleSessionCreated(session)
+    happyPath(collector, session)
+    feed(collector, session, 'system/message', {
+      turn: 1,
+      step: 2,
+      message: createSystemMessage('', 'dsh-fast-test'),
+    }, true)
+
+    const measure = (): { totalTokens: number; surfaceTokens: number } => ({ totalTokens: 1_000, surfaceTokens: 300 })
+    const viaFallback = collector.snapshot(session, measure)
+    const viaQuery = collector.snapshot(session, measure, undefined, surfaceEventsOf(session))
+    expect(viaQuery).toEqual(viaFallback)
+    // The surface read carries the prompt node, so the system bucket is priced.
+    expect(viaFallback.context.systemTokens).toBeGreaterThan(0)
+    expect(viaFallback.context.systemBreakdown.other.chars).toBe(SYSTEM_TEXT.length)
+  })
+
+  it('takes the supplied surface over the session fallback when they differ', () => {
+    // Proves the new parameter is really consumed rather than silently ignored.
+    const session = Session.create(SessionId('collector-surface-precedence'))
+    const collector = new FastCollector(resolveConfig({}))
+    collector.handleSessionCreated(session)
+    happyPath(collector, session)
+
+    const injected = 'A completely different prompt body.'
+    const injectedEvents = [
+      ...surfaceEventsOf(session).filter(event => event.type !== 'system/message'),
+      {
+        type: 'system/message',
+        seq: 900,
+        time: 0,
+        data: { turn: 9, step: 9, message: createSystemMessage(injected, 'dsh-fast-test') },
+      },
+    ] as unknown as readonly SessionEvent[]
+    const snapshot = collector.snapshot(session, () => ({ totalTokens: 1_000, surfaceTokens: 300 }), undefined, injectedEvents)
+    expect(snapshot.context.systemBreakdown.other.chars).toBe(injected.length)
   })
 })
 

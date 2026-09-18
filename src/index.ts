@@ -64,6 +64,11 @@ interface SystemPromptService {
   assemble(): Promise<{ sections: readonly { name: string; text: string }[] }>
 }
 
+/** The structural surface of the optional `ctx.sessionQuery` service. */
+interface SessionQueryService {
+  readSurface(sessionId: Session['id']): Promise<{ readonly events: readonly SessionEvent[] }>
+}
+
 /**
  * Mount the diagnostics. The resolved config is validated first (fail loud);
  * with `enabled: false` the plugin registers nothing and stays inert.
@@ -111,9 +116,30 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
     }
   }
 
+  /**
+   * Read the current surface events for one session through the optional
+   * `sessionQuery` service. This replaces the deprecated synchronous
+   * `Session.eventAt(seq)` read; a host that composes no `sessionQuery` leaves
+   * the collector on its own non-deprecated sync fallback, and a failing read
+   * degrades to that fallback with one warning instead of failing the report.
+   * @param session - the session to read.
+   * @returns the surface events in model-history order, or undefined to fall back.
+   */
+  const readSurfaceEvents = async (session: Session): Promise<readonly SessionEvent[] | undefined> => {
+    const sessionQuery = ctx.get('sessionQuery') as unknown as SessionQueryService | undefined
+    if (sessionQuery === undefined) return undefined
+    try {
+      const surface = await sessionQuery.readSurface(session.id)
+      return surface.events
+    } catch (error) {
+      logger.warn(`session "${session.id}": surface read failed, falling back to the synchronous read: ${error instanceof Error ? error.message : String(error)}`)
+      return undefined
+    }
+  }
+
   /** Build the complete report for one session. */
   const reportFor = async (session: Session): Promise<FastReport> => {
-    const snapshot = collector.snapshot(session, measure, await assembleSections())
+    const snapshot = collector.snapshot(session, measure, await assembleSections(), await readSurfaceEvents(session))
     return buildReport(
       snapshot,
       {
@@ -128,7 +154,7 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
 
   /** Append one snapshot to the session's durable history (fire-and-forget). */
   const persist = async (session: Session): Promise<void> => {
-    const snapshot = collector.snapshot(session, measure, await assembleSections())
+    const snapshot = collector.snapshot(session, measure, await assembleSections(), await readSurfaceEvents(session))
     const next = appendSample(sessions.get(session.id), { at: Date.now(), snapshot }, resolved.maxHistorySamples)
     void sessions.put(session.id, next).catch((error: unknown) => {
       logger.warn(`session "${session.id}": persist failed: ${error instanceof Error ? error.message : String(error)}`)
