@@ -11,3 +11,10 @@ minimumReleaseAgeExclude:
 allowBuilds:
   esbuild: true
 verifyDepsBeforeRun: false
+# Keep ONE @deepseek-ai/dsh-typert-protocol in the tree. A transitive
+# 0.1.6-alpha.2 copy lands next to the repo's own 0.1.5-rc.2 line, and both
+# ship a `typert` declaration on the same interface, which the published-line
+# ruler (skipLibCheck: false) rejects with TS2717. This repo's dev line is
+# 0.1.5-rc.2 (see AGENTS.md), so the override pins the older copy for everyone.
+overrides:
+  '@deepseek-ai/dsh-typert-protocol': 0.1.5-rc.2

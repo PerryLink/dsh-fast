@@ -27,9 +27,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.5-rc.2` (adapted 2026-09-09; public tag commit `fb2c4b9e69`): the system prompt is surface node 0 (a `system/message`) instead of a request-envelope field, so the report reads it from the surface and prices the meter's surface net of it. Verified 2026-09-11 with the published `0.1.5-rc.2` peers (full local gate chain); the monthly compat workflow re-runs the profile install smoke against the same pins.
+- DeepSeek Harness `dsh-v0.1.6-alpha.2` (adapted 2026-09-18): the session surface is read through the optional `sessionQuery` service — the deprecated synchronous `Session.eventAt(seq)` accessor is gone, with an equivalent synchronous read as the fallback — and every registration now lives in one lifecycle effect that releases them in reverse order. Internal implementation change: the reported metrics are identical for the same log. Verified 2026-09-18 against the local gate chain (dual typecheck rulers + 70 tests); the compat workflow re-runs the profile install smoke against the published pins.
 - Node `^22.19.0 || >=24.0.0`, ESM only (`"type": "module"`).
-- Peer dependencies: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` at `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0` (devDependencies pin `0.1.5-rc.2`); the `0.1.2-rc.1` line stays supported at runtime through a structural fallback to the pre-0.1.5 `header.system`.
+- Peer dependencies: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` at `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0` (devDependencies pin `0.1.5-rc.2`); the `0.1.2-rc.1` line stays supported at runtime through a structural fallback to the pre-0.1.5 `header.system`.
 
 ## What you get
 
@@ -109,6 +109,7 @@ All tunables are Schemastery `Config` fields; invalid values fail the profile lo
 - **Spill detection is heuristic** — it reads the durable spill notice (`Full … stored at:`); no dedicated session event exists.
 - **System prompt is one bucket** — AGENTS.md, skill directory, and persona are all part of the assembled system prompt; since `0.1.5-alpha.1` it is surface node 0 (a `system/message`) and carries no per-section token accounting, so they are reported together.
 - **Load timing starts at publication** — the disk-read portion of a restore happens before `session/created` (owned by `sessionPersistence`) and is not observable from this plugin's allowed events; the reported duration is publication-to-first-request.
+- **Degradations are announced once** — a host without `tokenMeter` falls back to heuristic token pricing, a host without `systemPrompt` attributes the whole prompt to one bucket, and a failing `inspector` outlet is ignored; each of these now says so once per process instead of changing what the numbers mean in silence.
 
 ## Development
 

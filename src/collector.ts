@@ -45,19 +45,39 @@ const SPILL_NOTICE_MARKERS = ['Full', 'stored at:'] as const
  * surface order. 0.1.5-alpha.1 derives the prompt from surface node 0; an empty
  * node is dormant and never restores older text. Mirrors
  * `SystemPromptProjection` in the host agent loop.
- * @param session - the session to read.
+ * @param surfaceEvents - the current surface events in model-history order
+ *   (from the optional `sessionQuery` service, or {@link surfaceEventsOf}).
  * @returns the effective system message, or undefined when none is active.
  */
-export function effectiveSystemMessage(session: Session): SystemMessage | undefined {
+export function effectiveSystemMessage(surfaceEvents: readonly SessionEvent[]): SystemMessage | undefined {
   let effective: SystemMessage | undefined
-  for (const seq of session.surface.nodes) {
-    const event = session.eventAt(seq)
-    if (event?.type !== 'system/message') continue
+  for (const event of surfaceEvents) {
+    if (event.type !== 'system/message') continue
     const message = event.data.message
     if (message.content.length === 0) continue
     effective = message
   }
   return effective
+}
+
+/**
+ * The current surface events of a live session, resolved from one snapshot of
+ * the accepted log. This is the fallback read for hosts that compose no
+ * `sessionQuery` service: it replaces the deprecated `Session.eventAt(seq)`
+ * accessor (new calls are prohibited) while keeping the same surface-node
+ * order and the same log as the source of truth.
+ * @param session - the session to read.
+ * @returns the surface events in model-history order.
+ */
+export function surfaceEventsOf(session: Session): readonly SessionEvent[] {
+  const bySeq = new Map<number, SessionEvent>()
+  for (const event of session.snapshotEvents()) bySeq.set(event.seq, event)
+  const events: SessionEvent[] = []
+  for (const seq of session.surface.nodes) {
+    const event = bySeq.get(seq)
+    if (event !== undefined) events.push(event)
+  }
+  return events
 }
 
 /** The display/durable text of a system message (text blocks plus structural JSON). */
@@ -234,13 +254,15 @@ export class FastCollector {
    * @param sections - optional named system-prompt sections (from the optional
    *   `systemPrompt` service); absent = the whole rendered system prompt is
    *   attributed to the `other` bucket.
+   * @param surfaceEvents - optional pre-read surface events (the async
+   *   `sessionQuery` read path); absent = the sync fallback read.
    * @returns the snapshot.
    */
-  snapshot(session: Session, measure?: MeasureFn, sections?: readonly SystemSection[]): FastSnapshot {
+  snapshot(session: Session, measure?: MeasureFn, sections?: readonly SystemSection[], surfaceEvents?: readonly SessionEvent[]): FastSnapshot {
     const state = this.live.get(session)
     if (state === undefined) return emptySnapshot()
     const measurement = measure === undefined ? undefined : measure(session)
-    const systemMessage = effectiveSystemMessage(session)
+    const systemMessage = effectiveSystemMessage(surfaceEvents ?? surfaceEventsOf(session))
     const legacySystem = systemMessage === undefined ? legacySystemText(state.lastHeader) : undefined
     const systemTokens = systemMessage === undefined
       ? estimateLegacySystemTokens(legacySystem)

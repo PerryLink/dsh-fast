@@ -67,4 +67,33 @@ describe('fiber disposal', () => {
       vi.useRealTimers()
     }
   })
+
+  // -------------------------------------------------------------------------
+  // G-9: disable → enable round trip keeps both contributions, exactly once
+  // -------------------------------------------------------------------------
+
+  it('remounts after disposal with /fast and fast_report present once and usable', async () => {
+    const base = await mountBase('lifecycle-roundtrip')
+    try {
+      const first = await base.ctx.plugin(plugin as never, {} as never)
+      await first.dispose()
+
+      const second = await base.ctx.plugin(plugin as never, {} as never)
+      // Both contributions are back, and the single lifecycle effect owns them.
+      expect(base.ctx.tools.get('fast_report')).toBeDefined()
+      expect(base.ctx.commands.find(base.agent, 'fast')).toBeDefined()
+
+      // Usable: the command really executes against the remounted registrations.
+      const execution = await base.ctx.commands.execute(base.agent, '/fast', [], new AbortController().signal)
+      expect(execution?.result).toMatchObject({ kind: 'success' })
+      expect(String((execution?.result as { text?: string } | undefined)?.text ?? '')).toContain('dsh-fast')
+
+      // The second disposal removes them again without leftovers.
+      await second.dispose()
+      expect(base.ctx.tools.get('fast_report')).toBeUndefined()
+      expect(base.ctx.commands.find(base.agent, 'fast')).toBeUndefined()
+    } finally {
+      await unmountBase(base)
+    }
+  })
 })

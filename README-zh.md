@@ -27,9 +27,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.5-rc.2`（2026-09-09 已适配；公开 tag commit `fb2c4b9e69`）：系统提示词改为 surface 节点 0（`system/message`）而不再放在请求信封里，因此报告从会话表面读取它，并把 token meter 的 surface 计价扣除系统提示词后再上报。已于 2026-09-11 用已发布的 `0.1.5-rc.2` peers 核验（本地全门控链）；每月的 compat workflow 用同一钉号重跑 profile 安装冒烟。
+- DeepSeek Harness `dsh-v0.1.6-alpha.2`（2026-09-18 已适配）：会话表面改经可选的 `sessionQuery` 服务读取——已弃用的同步 `Session.eventAt(seq)` 访问器退役，改由等价的同步回退读兜底；所有注册收进同一个 lifecycle effect 并按逆序释放。属内部实现变更：同一日志下上报指标逐字相同。已于 2026-09-18 核验本地门控链（双 typecheck 尺子 + 70 项测试）；compat workflow 用已发布钉号重跑 profile 安装冒烟。
 - Node `^22.19.0 || >=24.0.0`，纯 ESM（`"type": "module"`）。
-- peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.2`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0`；devDependencies 钉 `0.1.5-rc.2`）；`0.1.2-rc.1` 旧线仍通过结构式回退读取 pre-0.1.5 的 `header.system` 在运行时受支持。
+- peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.2`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-session-query`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0`；devDependencies 钉 `0.1.5-rc.2`）；`0.1.2-rc.1` 旧线仍通过结构式回退读取 pre-0.1.5 的 `header.system` 在运行时受支持。
 
 ## What you get
 
@@ -109,6 +109,7 @@ dsh plugin --profile demo remove dsh-fast    # 卸载
 - **spill 检测是启发式** —— 读取持久化的 spill 提示（`Full … stored at:`）；没有专门的会话事件。
 - **系统提示词是单个桶** —— AGENTS.md、技能目录与人设都属于组装后的系统提示词；自 `0.1.5-alpha.1` 起它是 surface 节点 0（`system/message`），本身不携带分段 token 统计，因此合并上报。
 - **加载耗时从发布时刻起算** —— 恢复时的磁盘读取发生在 `session/created` 之前（由 `sessionPersistence` 负责），本插件允许的事件观察不到；上报的时长是发布到首次请求的延迟。
+- **降级路径只播报一次** —— 无 `tokenMeter` 的宿主回退到启发式 token 计价，无 `systemPrompt` 的宿主把整段提示词并入一个桶，`inspector` 出口失败则被忽略；这三者现在各在每进程播报一次，而不是静默改变数字的含义。
 
 ## Development
 

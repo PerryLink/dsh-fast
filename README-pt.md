@@ -25,9 +25,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.5-rc.2` (adaptado em 2026-09-09; commit público da tag `fb2c4b9e69`): o system prompt agora é o nó 0 da superfície (um `system/message`) em vez de um campo do envelope da requisição, então o relatório o lê da superfície e desconta seu preço da superfície do token meter. Verificado em 2026-09-11 com os peers publicados `0.1.5-rc.2` (cadeia completa de portas local); o workflow compat mensal repete o smoke de instalação de profile com os mesmos pins.
+- DeepSeek Harness `dsh-v0.1.6-alpha.2` (adaptado em 2026-09-18): a superfície da sessão é lida pelo serviço opcional `sessionQuery` — o acessor síncrono obsoleto `Session.eventAt(seq)` sai de cena, com uma leitura síncrona equivalente como fallback — e todos os registros agora vivem em um único efeito de ciclo de vida que os libera em ordem inversa. Mudança interna: as métricas são idênticas para o mesmo log. Verificado em 2026-09-18 com a cadeia de portas local (typecheck duplo + 70 testes); o workflow compat repete o smoke de instalação de profile com os pins publicados.
 - Node `^22.19.0 || >=24.0.0`, somente ESM (`"type": "module"`).
-- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, e `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-storage-domain` em `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0` (devDependencies fixam `0.1.5-rc.2`); a linha `0.1.2-rc.1` continua suportada em execução por um fallback estrutural ao `header.system` anterior ao 0.1.5.
+- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.2`, e `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` em `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0` (devDependencies fixam `0.1.5-rc.2`); a linha `0.1.2-rc.1` continua suportada em execução por um fallback estrutural ao `header.system` anterior ao 0.1.5.
 
 ## What you get
 
@@ -107,6 +107,7 @@ O `dsh-fast` consome apenas seams públicos: eventos `session/*` e `agent/*`, o 
 - **A detecção de spill é heurística** — lê o aviso persistente (`Full … stored at:`); não há evento de sessão dedicado.
 - **O system prompt é um único balde** — AGENTS.md, skills e persona formam o system prompt montado; desde `0.1.5-alpha.1` é o nó 0 da superfície (um `system/message`) e não traz contagem por seção, então são reportados juntos.
 - **O tempo de carga começa na publicação** — a leitura de disco de uma restauração ocorre antes de `session/created`; a duração reportada é publicação→primeira requisição.
+- **As degradações são anunciadas uma vez** — um host sem `tokenMeter` cai no preço heurístico de tokens, um host sem `systemPrompt` atribui todo o prompt a um único balde, e uma saída `inspector` que falha é ignorada; cada caso agora avisa uma vez por processo em vez de mudar o significado dos números em silêncio.
 
 ## Development
 
