@@ -97,6 +97,14 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
 
   const collector = new FastCollector(resolved)
   const domain = await ctx.storageDomain.open(fastDomainSpec)
+  // Disposal during the open await: the fiber is gone, so no effect may be
+  // registered any more — release the freshly opened handle instead of leaking
+  // it (the storage facility is single-open per name, so an unreleased handle
+  // also blocks a later remount).
+  if (ctx.fiber.uid === null) {
+    await domain.close()
+    return
+  }
   const sessions = domain.table('sessions')
 
   /**
