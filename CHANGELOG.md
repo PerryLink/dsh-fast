@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.15] - 2026-09-23
+
+### Fixed
+
+- Session format V4 broke the tool-result read. `flattenToolResultText()` read the V3 wrapper shape (`message.content[0].content`), but V4 — the `0.1.7` line — lifted the tool result to a first-class tool-role message whose `content` **is** the block array, and `'tool-result'` left `ContentBlockMap` entirely, so the declaration build failed with `Property 'content' does not exist on type 'ContentBlock'`. It now reads both shapes structurally, the same style as the existing pre-`0.1.5` `legacySystemText` fallback, so a host on either line reports identical metrics — this repo's peer range still admits the older lines at runtime. A new regression case locks the released V3 wrapper shape.
+- `createSystemMessage(text, plugin)` became `createSystemMessage(text)` on the `0.1.7` line (the producer label was dropped with the message-source rework), which failed typecheck with `Expected 1 arguments, but got 2` at seven call sites. The call sites now pass the rendered prompt alone; the removed label was never asserted anywhere.
+
+### Changed
+
+- Move the `@deepseek-ai/dsh-*` dev/test pins to `0.1.7-alpha.2`, and the `@deepseek-ai/cordis` / `@deepseek-ai/schemastery` dev carets to the versions that line declares, so the workspace resolves one Schemastery and one typert-protocol copy.
+- Every declared host range — `engines.dsh` and the eight `peerDependencies` bands — gains the `|| >=0.1.7-0 <0.2.0` arm, so the bands now admit the `0.1.7` prerelease line. Under semver's prerelease rule a range whose only prerelease comparators sit on earlier version tuples cannot admit a later alpha, so the previous three-clause form excluded the very host this release targets. No existing arm was removed or narrowed.
+- `dshWorkshop.compatibility.dshVersions` gains `0.1.7-alpha.2`, and all five READMEs name the verified line.
+- The pnpm workspace overrides follow the line: the `@deepseek-ai/dsh-typert-protocol` pin that exists to keep ONE copy in the tree moves to `0.1.7-alpha.2`, and an explicit override pins `@deepseek-ai/dsh-session-query` (a peer-only seam this repo never imports directly) so the graph holds no older-line subgraph.
+- A new `typecheck:checkout` ruler (`tsc -p tsconfig.checkout.json --noEmit`) compiles against the local harness checkout's built type faces alongside the published-face ruler.
+- The compat workflow now installs the `0.1.7-alpha.2` host instead of `0.1.6-alpha.2`, so the scheduled end-to-end run exercises the line this package declares.
+
 ## [0.2.14] - 2026-09-19
 
 ### Added
