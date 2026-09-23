@@ -17,12 +17,12 @@ import {
 describe('estimateSystemTokens', () => {
   it('returns 0 when the system message is absent or its content is empty', () => {
     expect(estimateSystemTokens(undefined)).toBe(0)
-    expect(estimateSystemTokens(createSystemMessage('', 'test'))).toBe(0)
+    expect(estimateSystemTokens(createSystemMessage(''))).toBe(0)
   })
 
   it('prices a system message at ceil(chars/4) + framing overhead', () => {
     const system = 'You are a helpful assistant.'
-    expect(estimateSystemTokens(createSystemMessage(system, 'test')))
+    expect(estimateSystemTokens(createSystemMessage(system)))
       .toBe(Math.ceil(system.length / 4) + 4)
   })
 })

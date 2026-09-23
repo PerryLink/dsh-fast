@@ -29,9 +29,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.7-alpha.1`（2026-09-18 已适配）：会话表面改经可选的 `sessionQuery` 服务读取——已弃用的同步 `Session.eventAt(seq)` 访问器退役，改由等价的同步回退读兜底；所有注册收进同一个 lifecycle effect 并按逆序释放。属内部实现变更：同一日志下上报指标逐字相同。已于 2026-09-18 核验本地门控链（双 typecheck 尺子 + 70 项测试）；compat workflow 用已发布钉号重跑 profile 安装冒烟。
+- DeepSeek Harness `dsh-v0.1.7-alpha.2`（2026-09-18 已适配）：会话表面改经可选的 `sessionQuery` 服务读取——已弃用的同步 `Session.eventAt(seq)` 访问器退役，改由等价的同步回退读兜底；所有注册收进同一个 lifecycle effect 并按逆序释放。属内部实现变更：同一日志下上报指标逐字相同。已于 2026-09-18 核验本地门控链（双 typecheck 尺子 + 70 项测试）；compat workflow 用已发布钉号重跑 profile 安装冒烟。
 - Node `^22.19.0 || >=24.0.0`，纯 ESM（`"type": "module"`）。
-- peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.2`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-session-query`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0`；devDependencies 钉 `0.1.5-rc.2`）；`0.1.2-rc.1` 旧线仍通过结构式回退读取 pre-0.1.5 的 `header.system` 在运行时受支持。
+- peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.4`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-session-query`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0`；devDependencies 钉 `0.1.7-alpha.2`）；`0.1.2-rc.1` 旧线仍通过结构式回退读取 pre-0.1.5 的 `header.system` 在运行时受支持。
 
 ## What you get
 
@@ -117,7 +117,7 @@ dsh plugin --profile demo remove dsh-fast    # 卸载
 
 ```sh
 pnpm install
-pnpm run typecheck && pnpm run typecheck:ci
+pnpm run typecheck && pnpm run typecheck:ci && pnpm run typecheck:checkout
 pnpm test
 pnpm run build
 pnpm run verify:self-contained && pnpm run verify:artifacts

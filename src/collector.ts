@@ -99,13 +99,30 @@ function legacySystemText(header: EpochHeader | undefined): string | undefined {
   return typeof system === 'string' ? system : undefined
 }
 
+/**
+ * Structural read of one tool result's model-facing blocks, across both released
+ * representations. Through the V3 wrapper shape the blocks travelled inside ONE
+ * `tool-result` block (`message.content[0].content`); session format V4 — the
+ * `0.1.7` line — made the tool result a first-class message and the blocks are
+ * inline, while `'tool-result'` left `ContentBlockMap` entirely. Reading both
+ * shapes keeps the reported metrics identical on every supported host line.
+ * @param message - the tool-role message.
+ * @returns the model-facing blocks, in order.
+ */
+function toolResultBlocks(message: ToolResultMessage): readonly ToolResultMessage['content'][number][] {
+  const content = message.content
+  const wrapper = content[0] as { type?: unknown; content?: unknown } | undefined
+  if (wrapper !== undefined && wrapper.type === 'tool-result' && Array.isArray(wrapper.content)) {
+    return wrapper.content as readonly ToolResultMessage['content'][number][]
+  }
+  return content
+}
+
 /** Flatten a tool result's model-facing text blocks to one string. */
 export function flattenToolResultText(message: ToolResultMessage): string {
-  const block = message.content[0]
-  if (block === undefined) return ''
   let text = ''
-  for (const inner of block.content) {
-    if (inner.type === 'text') text += inner.text
+  for (const block of toolResultBlocks(message)) {
+    if (block.type === 'text') text += block.text
   }
   return text
 }

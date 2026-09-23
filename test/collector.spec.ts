@@ -1,13 +1,15 @@
 /**
- * The session/event collector over a REAL `Session` from the 0.1.5-alpha.1
+ * The session/event collector over a REAL `Session` from the 0.1.7-alpha.2
  * peers: load tracking, cache folding, compaction counting/trigger, spill
  * detection, system-prompt accounting, and snapshot assembly. Only the optional
  * token meter is supplied as a scripted function; every session and event is real.
+ * On the 0.1.7 line `createSystemMessage` takes the rendered prompt alone: the
+ * removed second argument used to carry the assembling plugin's name.
  * @module dsh-fast/test/collector.spec
  */
 
 import { createAssistantMessage, createSystemMessage, createToolResultMessage, createUserMessage } from '@deepseek-ai/dsh-llm/message'
-import { Session, SessionId, type SessionEvent } from '@deepseek-ai/dsh-session'
+import { Session, SessionId, type SessionEvent, type ToolResultMessage } from '@deepseek-ai/dsh-session'
 import { describe, expect, it } from 'vitest'
 import { CallId } from './call-id.ts'
 import {
@@ -43,7 +45,7 @@ function happyPath(collector: FastCollector, session: Session): void {
   feed(collector, session, 'system/message', {
     turn: 1,
     step: 1,
-    message: createSystemMessage(SYSTEM_TEXT, 'dsh-fast-test'),
+    message: createSystemMessage(SYSTEM_TEXT),
   }, true)
   feed(collector, session, 'user/message', createUserMessage({
     content: [{ type: 'text', text: 'hello' }],
@@ -115,7 +117,7 @@ describe('collector system-prompt accounting (A2 surface-read migration)', () =>
     feed(collector, session, 'system/message', {
       turn: 1,
       step: 2,
-      message: createSystemMessage('', 'dsh-fast-test'),
+      message: createSystemMessage(''),
     }, true)
 
     const measure = (): { totalTokens: number; surfaceTokens: number } => ({ totalTokens: 1_000, surfaceTokens: 300 })
@@ -141,7 +143,7 @@ describe('collector system-prompt accounting (A2 surface-read migration)', () =>
         type: 'system/message',
         seq: 900,
         time: 0,
-        data: { turn: 9, step: 9, message: createSystemMessage(injected, 'dsh-fast-test') },
+        data: { turn: 9, step: 9, message: createSystemMessage(injected) },
       },
     ] as unknown as readonly SessionEvent[]
     const snapshot = collector.snapshot(session, () => ({ totalTokens: 1_000, surfaceTokens: 300 }), undefined, injectedEvents)
@@ -175,12 +177,12 @@ describe('collector system-prompt accounting', () => {
     feed(collector, session, 'system/message', {
       turn: 1,
       step: 1,
-      message: createSystemMessage(SYSTEM_TEXT, 'dsh-fast-test'),
+      message: createSystemMessage(SYSTEM_TEXT),
     }, true)
     feed(collector, session, 'system/message', {
       turn: 1,
       step: 1,
-      message: createSystemMessage('', 'dsh-fast-test'),
+      message: createSystemMessage(''),
     }, true)
 
     const snapshot = collector.snapshot(session, () => ({ totalTokens: 500, surfaceTokens: 300 }))
@@ -286,6 +288,25 @@ describe('pure helpers', () => {
       isError: false,
     })
     expect(flattenToolResultText(message)).toBe('alphabeta')
+  })
+
+  it('still reads the released V3 wrapper tool-result shape', () => {
+    // Through 0.1.6 a tool result travelled as ONE `tool-result` block whose own
+    // `content` held the model-facing blocks; session format V4 (the 0.1.7 line)
+    // lifted it to a first-class tool-role message with the blocks inline. The
+    // structural read has to cover both, because the peer range still admits the
+    // older lines at runtime.
+    const wrapped = {
+      ...createToolResultMessage({ callId: CallId('c1'), content: [], isError: false }),
+      content: [{
+        type: 'tool-result',
+        toolCallId: CallId('c1'),
+        content: [{ type: 'text', text: 'gamma' }, { type: 'text', text: 'delta' }],
+        isError: false,
+      }],
+    } as unknown as ToolResultMessage
+    expect(flattenToolResultText(wrapped)).toBe('gammadelta')
+    expect(detectSpilledResult(wrapped)).toBe(false)
   })
 
   it('computes shares and cache hit rate', () => {

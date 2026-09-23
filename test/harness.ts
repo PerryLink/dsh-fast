@@ -4,7 +4,7 @@
  * dsh-storage-domain facility) rooted in a per-mount temp directory, the REAL
  * commands and tools registries (SystemPrompt/ToolRuntime/CommandRuntime), the
  * REAL `SessionProjection` registry, and the REAL `TokenMeter` from the
- * 0.1.5-alpha.1 peers. Nothing here is a hand-written mock of a service.
+ * 0.1.7-alpha.2 peers. Nothing here is a hand-written mock of a service.
  * @module dsh-fast/test/harness
  */
 
