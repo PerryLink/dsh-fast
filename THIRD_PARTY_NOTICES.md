@@ -14,7 +14,7 @@ published tarball except where noted; these are install-time dependencies:
 | [zod](https://github.com/colinhacks/zod) | `^4.4.3` | MIT | Runtime value schema for the `dsh_fast` storage-domain table (bundled into `lib/`) |
 | [@deepseek-ai/cordis](https://www.npmjs.com/package/@deepseek-ai/cordis) | `^4.0.2` (peer) | See package | The plugin runtime |
 | [@deepseek-ai/schemastery](https://www.npmjs.com/package/@deepseek-ai/schemastery) | `^3.18.2` (peer) | See package | Configuration schema |
-| `@deepseek-ai/dsh-*` peers | `>=0.1.2-rc.1 <0.2.0 \|\| >=0.1.5-alpha.1 <0.2.0` (peer; devDependencies pin `0.1.5-alpha.1`) | See packages | Official harness seams (`dsh-session`, `dsh-tools`, `dsh-commands`, `dsh-compaction`, `dsh-storage-domain`) |
+| `@deepseek-ai/dsh-*` peers | `>=0.1.2-rc.1 <0.2.0 \|\| >=0.1.5-alpha.1 <0.2.0 \|\| >=0.1.6-0 <0.2.0 \|\| >=0.1.7-0 <0.2.0` (peer; devDependencies pin `0.1.7-alpha.2`) | See packages | Official harness seams (`dsh-session`, `dsh-tools`, `dsh-commands`, `dsh-compaction`, `dsh-storage-domain`) |
 
 At runtime the plugin only talks to the harness services listed as
 peerDependencies; it performs no network requests and stores no credentials.
