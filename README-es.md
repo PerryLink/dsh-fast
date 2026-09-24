@@ -27,9 +27,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.7-alpha.2` (adaptado el 2026-09-18): la superficie de sesión se lee a través del servicio opcional `sessionQuery` — el accesor síncrono obsoleto `Session.eventAt(seq)` desaparece y queda una lectura síncrona equivalente como respaldo — y todos los registros viven ahora en un único efecto de ciclo de vida que los libera en orden inverso. Cambio interno: las métricas son idénticas para el mismo log. Verificado el 2026-09-18 con la cadena de puertas local (doble typecheck + 70 pruebas); el workflow compat repite el smoke de instalación de profile con los pines publicados.
+- DeepSeek Harness `dsh-v0.1.7-rc.1` (adaptado el 2026-09-18): la superficie de sesión se lee a través del servicio opcional `sessionQuery` — el accesor síncrono obsoleto `Session.eventAt(seq)` desaparece y queda una lectura síncrona equivalente como respaldo — y todos los registros viven ahora en un único efecto de ciclo de vida que los libera en orden inverso. Cambio interno: las métricas son idénticas para el mismo log. Verificado el 2026-09-24 con la cadena de puertas local (doble typecheck + 70 pruebas); el workflow compat repite el smoke de instalación de profile con los pines publicados.
 - Node `^22.19.0 || >=24.0.0`, solo ESM (`"type": "module"`).
-- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, y `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` en `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0` (devDependencies fijan `0.1.7-alpha.2`); la línea `0.1.2-rc.1` sigue soportada en ejecución mediante un fallback estructural al `header.system` anterior a 0.1.5.
+- Peers: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, y `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` en `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0` (devDependencies fijan `0.1.7-rc.1`); la línea `0.1.2-rc.1` sigue soportada en ejecución mediante un fallback estructural al `header.system` anterior a 0.1.5.
 
 ## What you get
 
