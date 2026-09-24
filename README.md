@@ -28,6 +28,14 @@
 
 ---
 
+<!-- star-cta -->
+## ⭐ 如果它帮到了你
+
+这个插件是 [DSH 插件家族](https://github.com/PerryLink)的一员（40+ 个，全部 Apache-2.0）。如果你在用，**给个 star** —— 它不会解锁任何功能，但会让下一个人在搜索里更容易找到它。
+
+*English:* part of a 40+ plugin family for DeepSeek Harness. If it is useful, **a star helps the next person find it** — nothing is gated behind it.
+
+
 ## Compatibility
 
 - DeepSeek Harness `dsh-v0.1.7-rc.1` (adapted 2026-09-18): the session surface is read through the optional `sessionQuery` service — the deprecated synchronous `Session.eventAt(seq)` accessor is gone, with an equivalent synchronous read as the fallback — and every registration now lives in one lifecycle effect that releases them in reverse order. Internal implementation change: the reported metrics are identical for the same log. Verified 2026-09-24 against the local gate chain (dual typecheck rulers + 70 tests); the compat workflow re-runs the profile install smoke against the published pins.
