@@ -15,7 +15,7 @@ verifyDepsBeforeRun: false
 # rest of the graph. A transitive copy from another line would land next to this
 # repo's own copy, and both ship a `typert` declaration on the same interface,
 # which the published-line ruler (skipLibCheck: false) rejects with TS2717. This
-# repo's whole graph is the 0.1.7-rc.1 line (see AGENTS.md), so the override
+# repo's whole graph is the 0.1.7-rc.2 line (see AGENTS.md), so the override
 # pins that line for everyone.
 #
 # @deepseek-ai/dsh-session-query is a peer-only seam (this repo never imports it,
@@ -25,5 +25,5 @@ verifyDepsBeforeRun: false
 # 0.1.6-alpha.2 subgraph — and its second schemastery copy — in the tree while
 # everything else moved to 0.1.7-alpha.2. The override pins the line for it too.
 overrides:
-  '@deepseek-ai/dsh-typert-protocol': 0.1.7-rc.1
-  '@deepseek-ai/dsh-session-query': 0.1.7-rc.1
+  '@deepseek-ai/dsh-typert-protocol': 0.1.7-rc.2
+  '@deepseek-ai/dsh-session-query': 0.1.7-rc.2

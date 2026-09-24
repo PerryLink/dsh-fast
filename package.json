@@ -1,6 +1,6 @@
 {
   "name": "dsh-fast",
-  "version": "0.2.16",
+  "version": "0.2.17",
   "description": "Read-only performance diagnostics for DeepSeek Harness: session load (open/restore) timing, spill-hit counts, compaction count and trigger, context-injection volume (AGENTS.md/skills/tool-schema token share), and LLM cache hit rate — surfaced via the /fast command and the fast_report tool, persisted as reconstructable fast/* session events with async sampling off the model path.",
   "author": "dsh-fast contributors",
   "repository": {
@@ -69,7 +69,8 @@
         "0.1.2-rc.1",
         "0.1.5-rc.2",
         "0.1.7-alpha.2",
-        "0.1.7-rc.1"
+        "0.1.7-rc.1",
+        "0.1.7-rc.2"
       ]
     },
     "capability": {
@@ -120,22 +121,22 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-attachment": "0.1.7-rc.1",
+    "@deepseek-ai/dsh-attachment": "0.1.7-rc.2",
     "@deepseek-ai/cordis": "^4.0.4",
     "@deepseek-ai/cordis-plugin-include": "^1.0.7",
     "@deepseek-ai/cordis-plugin-loader": "^1.0.3",
-    "@deepseek-ai/dsh-agent": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-commands": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-compaction": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-llm": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-session": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-session-projection": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-storage": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-storage-domain": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-storage-json": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-system-prompt": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-token-meter": "0.1.7-rc.1",
-    "@deepseek-ai/dsh-tools": "0.1.7-rc.1",
+    "@deepseek-ai/dsh-agent": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-commands": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-compaction": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-llm": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-session": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-session-projection": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-storage": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-storage-domain": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-storage-json": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-system-prompt": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-token-meter": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-tools": "0.1.7-rc.2",
     "@deepseek-ai/schemastery": "^3.18.4",
     "@types/node": "^22.19.0",
     "@vitest/coverage-v8": "^3.2.0",

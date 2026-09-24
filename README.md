@@ -38,9 +38,9 @@
 
 ## Compatibility
 
-- DeepSeek Harness `dsh-v0.1.7-rc.1` (adapted 2026-09-18): the session surface is read through the optional `sessionQuery` service — the deprecated synchronous `Session.eventAt(seq)` accessor is gone, with an equivalent synchronous read as the fallback — and every registration now lives in one lifecycle effect that releases them in reverse order. Internal implementation change: the reported metrics are identical for the same log. Verified 2026-09-24 against the local gate chain (dual typecheck rulers + 70 tests); the compat workflow re-runs the profile install smoke against the published pins.
+- DeepSeek Harness `dsh-v0.1.7-rc.2` (adapted 2026-09-18): the session surface is read through the optional `sessionQuery` service — the deprecated synchronous `Session.eventAt(seq)` accessor is gone, with an equivalent synchronous read as the fallback — and every registration now lives in one lifecycle effect that releases them in reverse order. Internal implementation change: the reported metrics are identical for the same log. Verified 2026-09-24 against the local gate chain (dual typecheck rulers + 70 tests); the compat workflow re-runs the profile install smoke against the published pins.
 - Node `^22.19.0 || >=24.0.0`, ESM only (`"type": "module"`).
-- Peer dependencies: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` at `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0` (devDependencies pin `0.1.7-rc.1`); the `0.1.2-rc.1` line stays supported at runtime through a structural fallback to the pre-0.1.5 `header.system`.
+- Peer dependencies: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` at `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0` (devDependencies pin `0.1.7-rc.2`); the `0.1.2-rc.1` line stays supported at runtime through a structural fallback to the pre-0.1.5 `header.system`.
 
 ## What you get
 
