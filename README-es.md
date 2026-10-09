@@ -34,6 +34,14 @@
 Este plugin forma parte de la [familia de plugins DSH](https://github.com/PerryLink) (más de 40, todos Apache-2.0). Si te resulta útil, **dale una estrella**: no desbloquea nada, pero ayuda a que la siguiente persona lo encuentre antes.
 
 *English:* part of a 40+ plugin family for DeepSeek Harness. If it is useful, **a star helps the next person find it** — nothing is gated behind it.
+## What is dsh-fast?
+
+Diagnóstico de rendimiento de solo lectura para DeepSeek Harness.
+
+Observa el flujo de eventos de sesión —nunca la ruta caliente del modelo— e informa de dónde se van la latencia y el presupuesto de contexto.
+
+![Demostración de terminal de dsh-fast: dsh-fast — what the /fast command reports for the current session](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.png)
+
 ## Compatibility
 
 - DeepSeek Harness `dsh-v0.2.1-alpha.1` (adaptado el 2026-09-18): la superficie de sesión se lee a través del servicio opcional `sessionQuery` — el accesor síncrono obsoleto `Session.eventAt(seq)` desaparece y queda una lectura síncrona equivalente como respaldo — y todos los registros viven ahora en un único efecto de ciclo de vida que los libera en orden inverso. Cambio interno: las métricas son idénticas para el mismo log. Verificado el 2026-10-04 con la cadena de puertas local (tres typecheck + 71 pruebas); el workflow compat repite el smoke de instalación de profile con los pines publicados.
@@ -51,6 +59,10 @@ Este plugin forma parte de la [familia de plugins DSH](https://github.com/PerryL
 - **Muestreo asíncrono** — plegado O(1) por evento; el muestreo corre en un temporizador, nunca en la ruta de append.
 
 ## Quick start
+
+```sh
+dsh plugin --profile web add github:PerryLink/dsh-fast
+```
 
 ### git channel
 
