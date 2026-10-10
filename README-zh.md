@@ -45,6 +45,10 @@ DeepSeek Harness 的只读性能诊断插件。
 
 ![dsh-fast 终端演示：dsh-fast — what the /fast command reports for the current session](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.png)
 
+![Animated terminal demo of dsh-fast](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.gif)
+
+*同一次运行，动图版。*
+
 ## Compatibility
 
 - DeepSeek Harness `dsh-v0.2.1-alpha.1`（2026-09-18 已适配）：会话表面改经可选的 `sessionQuery` 服务读取——已弃用的同步 `Session.eventAt(seq)` 访问器退役，改由等价的同步回退读兜底；所有注册收进同一个 lifecycle effect 并按逆序释放。属内部实现变更：同一日志下上报指标逐字相同。已于 2026-10-04 核验本地门控链（三把 typecheck 尺子 + 71 项测试）；compat workflow 用已发布钉号重跑 profile 安装冒烟。

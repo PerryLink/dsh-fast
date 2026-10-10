@@ -43,6 +43,10 @@ DeepSeek Harness के लिए केवल-पठन प्रदर्श�
 
 ![dsh-fast का टर्मिनल डेमो: dsh-fast — what the /fast command reports for the current session](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.png)
 
+![Animated terminal demo of dsh-fast](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.gif)
+
+*वही रन, एनिमेटेड।*
+
 ## Compatibility
 
 - DeepSeek Harness `dsh-v0.2.1-alpha.1` (2026-09-18 को अनुकूलित): सत्र सतह अब वैकल्पिक `sessionQuery` सेवा से पढ़ी जाती है — पदावनत सिंक्रोनस `Session.eventAt(seq)` एक्सेसर हट गया और उसकी जगह समतुल्य सिंक्रोनस रीड fallback है — और सभी रजिस्ट्रेशन अब एक ही lifecycle effect में रहते हैं जो उन्हें उल्टे क्रम में मुक्त करता है। आंतरिक बदलाव: एक ही लॉग पर मेट्रिक्स बिल्कुल समान रहते हैं। 2026-10-04 को स्थानीय गेट शृंखला (तीन typecheck + 71 टेस्ट) से सत्यापित; compat workflow प्रकाशित pins के साथ profile इंस्टॉल स्मोक दोहराता है।

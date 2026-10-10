@@ -46,6 +46,10 @@ Observes the session event stream — never the model hot path — and reports w
 
 ![Terminal demo of dsh-fast: dsh-fast — what the /fast command reports for the current session](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.png)
 
+![Animated terminal demo of dsh-fast](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.gif)
+
+*The same run, animated.*
+
 ## Compatibility
 
 - DeepSeek Harness `dsh-v0.2.1-alpha.1` (adapted 2026-09-18): the session surface is read through the optional `sessionQuery` service — the deprecated synchronous `Session.eventAt(seq)` accessor is gone, with an equivalent synchronous read as the fallback — and every registration now lives in one lifecycle effect that releases them in reverse order. Internal implementation change: the reported metrics are identical for the same log. Verified 2026-10-04 against the local gate chain (three typecheck rulers + 71 tests); the compat workflow re-runs the profile install smoke against the published pins.
