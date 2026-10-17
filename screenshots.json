@@ -1,5 +1,14 @@
-{
-  "screenshots": [
-    "docs/assets/dsh-fast-demo.png"
-  ]
-}
+[
+  {
+    "path": "docs/assets/dsh-fast-hero.png",
+    "kind": "hero",
+    "alt": "dsh-fast terminal output",
+    "caption": "Real dsh-fast test run; 71 tests passed."
+  },
+  {
+    "path": "docs/assets/dsh-fast-demo.gif",
+    "kind": "demo",
+    "alt": "Animated dsh-fast terminal session",
+    "caption": "The same run, assembled line by line."
+  }
+]
