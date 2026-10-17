@@ -218,10 +218,35 @@ export async function apply(ctx: Context, config: Config = {}): Promise<void> {
 
   // Human slash command: the on-demand report. The definition is registered
   // inside the single lifecycle effect below, which owns every registration.
+
+/** Render the durable per-session history, newest last. */
+function renderHistoryText(history: { samples: readonly { at: number; snapshot: { context: { totalTokens: number }; cache: { hitRate: number | null }; compaction: { count: number } } }[] } | undefined, limit: number): string {
+  if (history === undefined || history.samples.length === 0) {
+    return 'No durable /fast history for this session yet; the sampling timer writes one after the first turn.'
+  }
+  const rows = history.samples.slice(-Math.max(1, limit)).map((sample, index) => {
+    const at = new Date(sample.at).toISOString()
+    const hit = sample.snapshot.cache.hitRate === null ? 'n/a' : `${(sample.snapshot.cache.hitRate * 100).toFixed(1)}%`
+    return `${String(index + 1).padStart(2)}. ${at}  tokens=${sample.snapshot.context.totalTokens}  cache=${hit}  compactions=${sample.snapshot.compaction.count}`
+  })
+  return [`Durable /fast history (last ${rows.length} of ${history.samples.length}):`, ...rows].join('\n')
+}
+
   const fastCommand = {
     name: 'fast',
     description: 'Print the dsh-fast performance report for the active session.',
+    input: { hint: '[--history [n]]' },
     async handler(invocation: CommandInvocation) {
+      const arg = invocation.rawInput.trim()
+      if (arg !== '') {
+        const match = /^--history(?:\s+(\d+))?$/u.exec(arg)
+        if (match === null) {
+          return { kind: 'error', text: 'Usage: /fast [--history [n]]' }
+        }
+        const limit = match[1] === undefined ? 10 : Number(match[1])
+        const history = sessions.get(invocation.agent.session.id)
+        return { kind: 'success', text: renderHistoryText(history, limit) }
+      }
       const report = await reportFor(invocation.agent.session)
       return { kind: 'success', text: renderFastText(report) }
     },

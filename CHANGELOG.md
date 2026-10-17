@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.24] - 2026-10-18
+
+### Added
+
+- **`/fast --history [n]` reads the durable `dsh_fast.sessions` history.** The sampler already wrote bounded samples; until now nothing read them, so “why was it slow last time” was unanswerable. The command prints the last n samples (default 10) with time, total tokens, cache hit rate and compaction count; an empty store says so instead of printing zeros.
+
 ## [0.2.23] - 2026-10-18
 
 ### Changed
