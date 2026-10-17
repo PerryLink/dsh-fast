@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **The declared host corridor now matches the family tripwire; this is not a host-install fix.** The previous band ended the 0.2 line with `>=0.2.0-rc.1 <0.3.0-0`. Re-running the host's own gate (`evaluatePluginCompatibility`, semver 7.8.5, `includePrerelease: true`) shows that band already admitted `0.2.1-alpha.2`; the `NOT ADMITTED` result came from the family's stricter `dsh-plugin-kit/scripts/check-peer-range-latest.mjs`, which applies the prerelease rule unconditionally. The canonical six-clause band aligns this repository with that tripwire and the rest of the family. It does **not** claim to fix issue #10, whose install failure was not reproduced.
+
 ## [0.2.21] - 2026-10-10
 
 ### Changed
