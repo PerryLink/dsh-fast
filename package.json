@@ -140,7 +140,7 @@
     "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.2",
     "@deepseek-ai/dsh-token-meter": "0.2.1-rc.2",
     "@deepseek-ai/dsh-tools": "0.2.1-rc.2",
-    "@deepseek-ai/schemastery": "^3.18.4",
+    "@deepseek-ai/schemastery": "3.18.5",
     "@types/node": "^22.19.0",
     "@vitest/coverage-v8": "^3.2.0",
     "oxlint": "0.18.1",
