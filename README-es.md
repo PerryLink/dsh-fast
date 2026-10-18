@@ -21,6 +21,11 @@
 
 [English](README.md) · [简体中文](README-zh.md) · [Español](README-es.md) · [Português](README-pt.md) · [हिन्दी](README-hi.md)
 
+```sh
+dsh plugin --profile <name> add dsh-fast
+```
+
+
 </div>
 
 ---
@@ -29,6 +34,15 @@
 **📖 Base de conocimiento del ecosistema** — datos medidos, no marketing: [guía de desarrollo · datos de selección · criterios de mantenimiento](https://perrylink.github.io/dsh-plugin-guide/).
 
 <!-- star-cta -->
+## Install & uninstall
+
+```sh
+dsh plugin --profile demo add dsh-fast       # instalar
+dsh plugin --profile demo remove dsh-fast    # desinstalar
+```
+
+Verifica el montaje: `dsh --profile demo --dump-config | grep dsh-fast`.
+
 ## ⭐ 如果它帮到了你
 
 Este plugin forma parte de la [familia de plugins DSH](https://github.com/PerryLink) (más de 40, todos Apache-2.0). Si te resulta útil, **dale una estrella**: no desbloquea nada, pero ayuda a que la siguiente persona lo encuentre antes.
@@ -84,15 +98,6 @@ dsh plugin --profile demo add dsh-fast
 ```
 
 Ambos canales instalan la fila del bundle (ver `cordis.patch.yml`) en la pila `dsh.profile.bundles` y surten efecto al reiniciar.
-
-## Install & uninstall
-
-```sh
-dsh plugin --profile demo add dsh-fast       # instalar
-dsh plugin --profile demo remove dsh-fast    # desinstalar
-```
-
-Verifica el montaje: `dsh --profile demo --dump-config | grep dsh-fast`.
 
 ## Configuration
 
