@@ -15,12 +15,6 @@ importers:
       '@deepseek-ai/dsh-session-query':
         specifier: 0.2.1-rc.2
         version: 0.2.1-rc.2(9a30360bce1c3afea5674cd4ed4c4ce1)
-      tsdown:
-        specifier: ^0.22.14
-        version: 0.22.14(typescript@5.9.3)
-      typescript:
-        specifier: ^5.9.0
-        version: 5.9.3
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -88,6 +82,12 @@ importers:
       oxlint:
         specifier: 0.18.1
         version: 0.18.1
+      tsdown:
+        specifier: ^0.22.14
+        version: 0.22.14(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
       vitest:
         specifier: ^3.2.0
         version: 3.2.7(@types/node@22.20.1)
