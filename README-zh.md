@@ -101,6 +101,14 @@ dsh plugin --profile demo add dsh-fast
 
 两条通道都会把 bundle 行（见 `cordis.patch.yml`）装进 profile 的 `dsh.profile.bundles` 栈，重启后生效。
 
+## `/fast` namespace collision
+
+`/fast` 是宿主命令。若另一个插件也注册了名为 `fast` 的 **client** `commandUi`
+贡献，宿主的斜杠命令菜单可能整组丢弃 `/` 来源。该冲突位于宿主的 client 命令
+命名空间，本插件无法在运行时改名规避。处理方式：禁用/重命名另一个插件的
+`fast` client 命令，或移除其中一个插件。没有重复 client 贡献时，`/fast` 与
+`fast_report` 正常工作。
+
 ## Configuration
 
 所有可调参数都是 Schemastery `Config` 字段；非法值会在 profile 加载时响亮失败。

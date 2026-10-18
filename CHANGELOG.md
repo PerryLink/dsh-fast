@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.26] - 2026-10-19
+
+### Docs
+
+- Document the `/fast` host/client namespace collision and the workaround (disable/rename the other plugin’s `fast` client command, or remove one plugin), in all five READMEs. Issue #9 is a host-side collision that this plugin cannot rename at runtime.
+
 ## [0.2.25] - 2026-10-18
 
 ### Changed

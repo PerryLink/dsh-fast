@@ -99,6 +99,15 @@ dsh plugin --profile demo add dsh-fast
 
 Ambos canales instalan la fila del bundle (ver `cordis.patch.yml`) en la pila `dsh.profile.bundles` y surten efecto al reiniciar.
 
+## `/fast` namespace collision
+
+`/fast` es un comando del host. Si otro plugin registra una contribución **client**
+`commandUi` con el mismo nombre `fast`, el menú de comandos puede perder toda la
+fuente `/`. La colisión está en el espacio de nombres client del host; este plugin
+no puede renombrarla en tiempo de ejecución. Solución: desactiva/renombra el
+comando client `fast` del otro plugin, o elimina uno de los plugins. `/fast` y
+`fast_report` siguen funcionando si no hay una contribución client duplicada.
+
 ## Configuration
 
 Todos los ajustes son campos Schemastery `Config`; valores inválidos fallan la carga del profile de forma audible.

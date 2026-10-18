@@ -99,6 +99,14 @@ dsh plugin --profile demo add dsh-fast
 
 दोनों चैनल bundle पंक्ति (`cordis.patch.yml` देखें) को profile के `dsh.profile.bundles` स्टैक में स्थापित करते हैं और पुनः आरंभ पर प्रभावी होते हैं।
 
+## `/fast` namespace collision
+
+`/fast` होस्ट कमांड है। यदि दूसरा प्लगइन भी `fast` नाम की **client** `commandUi`
+योगदान पंजीकृत करता है, तो होस्ट का स्लैश कमांड मेनू पूरा `/` स्रोत छोड़ सकता है।
+यह टकराव होस्ट के client कमांड नामस्थान में है; यह प्लगइन रनटाइम पर नाम नहीं
+बदल सकता। उपाय: दूसरे प्लगइन की `fast` client कमांड बंद/नाम बदलें, या एक
+प्लगइन हटाएँ। बिना डुप्लिकेट client योगदान के `/fast` और `fast_report` काम करते हैं।
+
 ## Configuration
 
 सभी ट्यूनेबल Schemastery `Config` फ़ील्ड हैं; अमान्य मान profile लोड को ज़ोर से विफल करते हैं।
