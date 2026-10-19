@@ -55,9 +55,10 @@ Diagnóstico de desempenho somente leitura para DeepSeek Harness.
 
 Observa o fluxo de eventos da sessão — nunca o caminho quente do modelo — e informa para onde vão a latência e o orçamento de contexto.
 
-![Demonstração de terminal do dsh-fast: dsh-fast — what the /fast command reports for the current session](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-hero.png)
+![Diagrama de fluxo de dsh-fast: solicitação → política/revisão → veredito.](docs/assets/dsh-fast-flow.svg)
 
-![Animated terminal demo of dsh-fast](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.gif)
+*Visão geral do fluxo: solicitação → política/revisão → veredito. Os exemplos abaixo usam a superfície real de comandos.*
+
 
 *A mesma execução, animada.*
 
@@ -107,6 +108,18 @@ Ambos os canais instalam a linha do bundle (ver `cordis.patch.yml`) na pilha `ds
 em runtime. Solução: desative/renomeie o comando client `fast` do outro plugin, ou
 remova um dos plugins. `/fast` e `fast_report` continuam funcionando sem uma
 contribuição client duplicada.
+
+### Exemplos
+
+São os pontos de entrada reais; instale e chame um.
+
+#### Exemplo detalhado
+
+- `/fast`
+
+#### Exemplos breves
+
+- `fast_report`
 
 ## Configuration
 

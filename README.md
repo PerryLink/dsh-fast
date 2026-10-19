@@ -58,11 +58,11 @@ Read-only performance diagnostics for DeepSeek Harness.
 
 Observes the session event stream — never the model hot path — and reports where latency and context budget actually go.
 
-![Terminal demo of dsh-fast: dsh-fast — what the /fast command reports for the current session](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-hero.png)
+![Workflow diagram for dsh-fast: request → policy / review → verdict.](docs/assets/dsh-fast-flow.svg)
 
-![Animated terminal demo of dsh-fast](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.gif)
+*Workflow overview: request → policy / review → verdict. The examples below use the real command surface.*
 
-*The same run, animated.*
+
 
 ## Compatibility
 
@@ -110,6 +110,18 @@ source. That collision is in the host's client command namespace, not something
 this plugin can rename at runtime. Workaround: disable/rename the other
 plugin’s `fast` client command, or remove one of the plugins. `/fast` itself and
 `fast_report` still work when no duplicate client contribution exists.
+
+### Examples
+
+These are the plugin's real entry points; install once, then call one.
+
+#### Detailed example
+
+- `/fast`
+
+#### Brief examples
+
+- `fast_report`
 
 ## Configuration
 

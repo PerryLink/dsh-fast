@@ -55,9 +55,10 @@ DeepSeek Harness के लिए केवल-पठन प्रदर्श�
 
 सत्र घटना-धारा का अवलोकन करता है — मॉडल के हॉट पाथ को कभी नहीं — और बताता है कि विलंबता और संदर्भ बजट कहाँ जा रहा है।
 
-![dsh-fast का टर्मिनल डेमो: dsh-fast — what the /fast command reports for the current session](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-hero.png)
+![dsh-fast कार्यप्रवाह आरेख: अनुरोध → नीति/समीक्षा → निर्णय।](docs/assets/dsh-fast-flow.svg)
 
-![Animated terminal demo of dsh-fast](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.gif)
+*कार्यप्रवाह: अनुरोध → नीति/समीक्षा → निर्णय। नीचे के उदाहरण वास्तविक कमांड सतह का उपयोग करते हैं।*
+
 
 *वही रन, एनिमेटेड।*
 
@@ -106,6 +107,18 @@ dsh plugin --profile demo add dsh-fast
 यह टकराव होस्ट के client कमांड नामस्थान में है; यह प्लगइन रनटाइम पर नाम नहीं
 बदल सकता। उपाय: दूसरे प्लगइन की `fast` client कमांड बंद/नाम बदलें, या एक
 प्लगइन हटाएँ। बिना डुप्लिकेट client योगदान के `/fast` और `fast_report` काम करते हैं।
+
+### उदाहरण
+
+ये वास्तविक प्रवेश बिंदु हैं; इंस्टॉल के बाद एक चलाएँ।
+
+#### विस्तृत उदाहरण
+
+- `/fast`
+
+#### संक्षिप्त उदाहरण
+
+- `fast_report`
 
 ## Configuration
 

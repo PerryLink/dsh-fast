@@ -55,9 +55,10 @@ Diagnóstico de rendimiento de solo lectura para DeepSeek Harness.
 
 Observa el flujo de eventos de sesión —nunca la ruta caliente del modelo— e informa de dónde se van la latencia y el presupuesto de contexto.
 
-![Demostración de terminal de dsh-fast: dsh-fast — what the /fast command reports for the current session](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-hero.png)
+![Diagrama de flujo de dsh-fast: solicitud → política/revisión → veredicto.](docs/assets/dsh-fast-flow.svg)
 
-![Animated terminal demo of dsh-fast](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.gif)
+*Resumen del flujo: solicitud → política/revisión → veredicto. Los ejemplos siguientes usan la superficie de comandos real.*
+
 
 *La misma ejecución, animada.*
 
@@ -107,6 +108,18 @@ fuente `/`. La colisión está en el espacio de nombres client del host; este pl
 no puede renombrarla en tiempo de ejecución. Solución: desactiva/renombra el
 comando client `fast` del otro plugin, o elimina uno de los plugins. `/fast` y
 `fast_report` siguen funcionando si no hay una contribución client duplicada.
+
+### Ejemplos
+
+Son los puntos de entrada reales; instala y llama a uno.
+
+#### Ejemplo detallado
+
+- `/fast`
+
+#### Ejemplos breves
+
+- `fast_report`
 
 ## Configuration
 

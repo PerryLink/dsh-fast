@@ -57,9 +57,10 @@ DeepSeek Harness 的只读性能诊断插件。
 
 观察会话事件流——绝不触碰模型热路径——并报告延迟与上下文预算究竟花在哪里。
 
-![dsh-fast 终端演示：dsh-fast — what the /fast command reports for the current session](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-hero.png)
+![dsh-fast 工作流图：请求 → 策略/复核 → 判定。](docs/assets/dsh-fast-flow.svg)
 
-![Animated terminal demo of dsh-fast](https://raw.githubusercontent.com/PerryLink/dsh-fast/main/docs/assets/dsh-fast-demo.gif)
+*工作流概览：请求 → 策略/复核 → 判定。下面的示例使用实际命令面。*
+
 
 *同一次运行，动图版。*
 
@@ -108,6 +109,18 @@ dsh plugin --profile demo add dsh-fast
 命名空间，本插件无法在运行时改名规避。处理方式：禁用/重命名另一个插件的
 `fast` client 命令，或移除其中一个插件。没有重复 client 贡献时，`/fast` 与
 `fast_report` 正常工作。
+
+### 示例
+
+以下为插件真实入口；安装后调用一个即可。
+
+#### 详细示例
+
+- `/fast`
+
+#### 简短示例
+
+- `fast_report`
 
 ## Configuration
 
