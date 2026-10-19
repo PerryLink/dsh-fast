@@ -160,6 +160,22 @@ hit rate: 20%
 
 *स्रोत `plugins/dsh-fast/src/analyze.ts:88-131; baseline fixture at test/analyze.spec.ts:12-35, 82-100`*
 
+#### विफलता शाखा
+
+**इनपुट**
+
+~~~text
+/fast --history nope
+~~~
+
+**आउटपुट**
+
+~~~text
+Usage: /fast [--history [n]]
+~~~
+
+*स्रोत `plugins/dsh-fast/src/index.ts:241-245`*
+
 #### संक्षिप्त उदाहरण
 
 - `fast_report`

@@ -161,6 +161,22 @@ hit rate: 20%
 
 *Observado em `plugins/dsh-fast/src/analyze.ts:88-131; baseline fixture at test/analyze.spec.ts:12-35, 82-100`*
 
+#### Ramo de falha
+
+**Entrada**
+
+~~~text
+/fast --history nope
+~~~
+
+**Saída**
+
+~~~text
+Usage: /fast [--history [n]]
+~~~
+
+*Observado em `plugins/dsh-fast/src/index.ts:241-245`*
+
 #### Exemplos breves
 
 - `fast_report`

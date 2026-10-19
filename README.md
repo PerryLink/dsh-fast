@@ -163,6 +163,22 @@ hit rate: 20%
 
 *Observed from `plugins/dsh-fast/src/analyze.ts:88-131; baseline fixture at test/analyze.spec.ts:12-35, 82-100`*
 
+#### Failure branch
+
+**Input**
+
+~~~text
+/fast --history nope
+~~~
+
+**Output**
+
+~~~text
+Usage: /fast [--history [n]]
+~~~
+
+*Observed from `plugins/dsh-fast/src/index.ts:241-245`*
+
 #### Brief examples
 
 - `fast_report`

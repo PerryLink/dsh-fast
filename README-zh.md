@@ -162,6 +162,22 @@ hit rate: 20%
 
 *来源 `plugins/dsh-fast/src/analyze.ts:88-131; baseline fixture at test/analyze.spec.ts:12-35, 82-100`*
 
+#### 失败分支
+
+**输入**
+
+~~~text
+/fast --history nope
+~~~
+
+**输出**
+
+~~~text
+Usage: /fast [--history [n]]
+~~~
+
+*来源 `plugins/dsh-fast/src/index.ts:241-245`*
+
 #### 简短示例
 
 - `fast_report`
