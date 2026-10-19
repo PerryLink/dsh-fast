@@ -173,7 +173,7 @@ Gracias a todas las personas que han contribuido a `dsh-fast`:
 
 - **[PerryLink](https://github.com/PerryLink)** — autor y mantenedor: diseñó y construyó los diagnósticos de solo lectura (latencia de carga de sesión, recuentos de spill, métricas de compactación, volumen de inyección de contexto, tasa de aciertos de la caché LLM), el comando `/fast` y la herramienta `fast_report`, el dominio de almacenamiento `dsh_fast` y la documentación en cinco idiomas.
 
-## Familia de plugins DSH de PerryLink
+## PerryLink DSH Plugin Family
 
 Este proyecto forma parte de la familia de plugins de DeepSeek Harness de [PerryLink](https://github.com/PerryLink). El registro permanece plegado abajo para que cada README conserve una primera pantalla corta; expándelo para ver cada fila y su estado.
 
