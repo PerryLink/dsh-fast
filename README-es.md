@@ -115,7 +115,51 @@ Son los puntos de entrada reales; instala y llama a uno.
 
 #### Ejemplo detallado
 
-- `/fast`
+**Comando**
+
+~~~sh
+/fast
+~~~
+
+**Salida**
+
+~~~text
+dsh-fast 0.1.0 — performance report
+session: abc
+
+## Session load
+kind: open
+seed events: 0
+time to first request: 150 ms
+
+## Spill
+detected spilled results: 0 (heuristic)
+
+## Compaction
+count: 0 (manual: 0, automatic: 0)
+shadowed tokens: 0
+
+## Context volume
+total: 1000 tokens
+system (AGENTS.md/skills/persona): 400 (40%)
+tool schema: 200 (20%)
+surface: 400 (40%)
+
+## System prompt breakdown
+persona: 100 tokens / 400 chars (25%)
+skills: 0 tokens / 0 chars (0%)
+AGENTS.md: 0 tokens / 0 chars (0%)
+other (harness identity + tool guidance): 300 tokens / 1200 chars (75%)
+
+## LLM cache
+input: 800, cache read: 200, cache write: 50, output: 100
+hit rate: 20%
+
+## Suggestions
+- none
+~~~
+
+*Observado en `plugins/dsh-fast/src/analyze.ts:88-131; baseline fixture at test/analyze.spec.ts:12-35, 82-100`*
 
 #### Ejemplos breves
 
