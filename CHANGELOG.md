@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Declare `dsh.capabilities` (`sessions:read`, `tools:register`) and empty `dsh.labels`; the npm artifact was published before the capabilities wave and still warned DSC-11/13.
+
+
 ## [0.2.27] - 2026-10-24
 
 ### Fixed
