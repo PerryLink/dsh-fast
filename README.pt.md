@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-dark.svg">
-  <img src="docs/assets/dsh-fast-flow-light.svg" width="100%" alt="Fluxo de dados do dsh-fast: session/event → dobra O(1) do collector → snapshot() por timer → /fast e fast_report; as amostras são gravadas no domínio de armazenamento dsh_fast">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-hero-en-dark.webp">
+  <img src="docs/assets/dsh-fast-hero-en-light.webp" width="100%" alt="dsh-fast: um único /fast mostra a carga da sessão, os spill hits, as compactações, a divisão do orçamento de contexto e o acerto do cache LLM (campos reais, valores de exemplo)">
 </picture>
 
 # dsh-fast
@@ -37,6 +37,11 @@ dsh plugin --profile <name> add dsh-fast
 ## O que é
 
 `dsh-fast` é um check-up de uma sessão do DeepSeek Harness: um único `/fast` mostra o tempo de carga da sessão, quantos resultados de ferramenta foram derramados (spill), quantas compactações dispararam, como o orçamento de contexto se divide entre system prompt / schema de ferramentas / histórico da conversa e a taxa de acertos do cache LLM. É estritamente somente leitura: escuta `session/created`, `session/event` e `session/disposed`, dobra cada evento em O(1), amostra snapshots em um timer e nunca entra no waterfall da requisição do modelo nem dos resultados de ferramentas. As métricas são gravadas no domínio de armazenamento `dsh_fast` (um histórico limitado por sessão), não no log da sessão; a identidade do relatório e o diretório de trabalho opcional são saneados antes de exibir.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-fast-flow-v5-light.svg" width="100%" alt="Fluxo do dsh-fast: o canal de eventos dobra contadores na rota de append; o canal de amostragem lê tokenMeter, systemPrompt e sessionQuery a cada 60 s; ambos convergem em um snapshot de cinco seções que o timer grava no domínio dsh_fast e que o relatório sob demanda transforma em texto de /fast e JSON de fast_report; /fast --history lê o domínio de volta">
+</picture>
 
 ## Instalação em três passos
 
@@ -308,7 +313,7 @@ node scripts/check-readme-sync.mjs
 pnpm pack
 ```
 
-As imagens do README são geradas por [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python 3, biblioteca padrão, sem Pillow); ele escreve o par claro/escuro `docs/assets/dsh-fast-flow-{light,dark}.svg` e é idempotente. O antigo `docs/assets/dsh-fast-flow.svg` de tema único, `dsh-fast-hero.png` e `dsh-fast-demo.*` ficam no lugar para que links externos não retornem 404; os READMEs não os referenciam mais.
+As imagens do README são geradas por [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Pillow para os heroes rasterizados, SVG escrito à mão para o diagrama); ele escreve `docs/assets/dsh-fast-hero-{zh,en}-{light,dark}.webp` e `docs/assets/dsh-fast-flow-v5-{light,dark}.svg` e é idempotente. Os antigos `docs/assets/dsh-fast-flow.svg` de tema único, `dsh-fast-flow-{light,dark}.svg`, `dsh-fast-hero.png` e `dsh-fast-demo.*` ficam no lugar para que links externos não retornem 404; os READMEs não os referenciam mais.
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `deepseek`, `cordis`, `performance`, `diagnostics`, `profiling`, `context-engineering`, `llm-cache`
 

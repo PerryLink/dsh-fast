@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-dark.svg">
-  <img src="docs/assets/dsh-fast-flow-light.svg" width="100%" alt="dsh-fast 数据流：session/event → collector O(1) 折叠 → snapshot() 定时采样 → /fast 与 fast_report；快照写入 dsh_fast 存储域">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-hero-zh-dark.webp">
+  <img src="docs/assets/dsh-fast-hero-zh-light.webp" width="100%" alt="dsh-fast：一条 /fast 读完会话加载、溢出命中、压缩次数、上下文预算与 LLM 缓存命中率（真实字段，示例数值）">
 </picture>
 
 # dsh-fast
@@ -37,6 +37,11 @@ dsh plugin --profile <name> add dsh-fast
 ## 它是什么
 
 `dsh-fast` 是给 DeepSeek Harness 会话做的一次体检：一条 `/fast` 就能看到这次会话的加载耗时、有多少工具结果被 spill、compaction 触发了几次、上下文预算被系统提示词 / 工具 schema / 对话历史各吃掉多少，以及 LLM 缓存命中率。它严格只读：监听 `session/created`、`session/event`、`session/disposed`，每个事件做 O(1) 折叠，快照在定时器上采样，绝不进入模型请求或工具结果的任何 waterfall。度量写入 `dsh_fast` 存储域（每会话一段有界历史），不写会话日志；报告里的会话标识与可选工作目录在展示前已脱敏。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-fast-flow-v5-light.svg" width="100%" alt="dsh-fast 管线：事件通道在 append 路径做 O(1) 折叠；采样通道每 60 秒读 tokenMeter / systemPrompt / sessionQuery；两路汇流成 load·spill·compaction·context·cache 五段快照，再由定时器写入 dsh_fast 存储域、按需装配成 /fast 文本与 fast_report JSON；/fast --history 从域里读回">
+</picture>
 
 ## 三步上手
 
@@ -308,7 +313,7 @@ node scripts/check-readme-sync.mjs
 pnpm pack
 ```
 
-配图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Python 3 标准库，无需 Pillow），输出 `docs/assets/dsh-fast-flow-{light,dark}.svg` 深浅双版，可重复执行。旧的单版 `docs/assets/dsh-fast-flow.svg`、`dsh-fast-hero.png` 与 `dsh-fast-demo.*` 保留在原处以防外链失效，README 不再引用。
+配图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Pillow 画 hero 位图，结构图手写 SVG），输出 `docs/assets/dsh-fast-hero-{zh,en}-{light,dark}.webp` 与 `docs/assets/dsh-fast-flow-v5-{light,dark}.svg`，可重复执行。旧的单版 `docs/assets/dsh-fast-flow.svg`、`dsh-fast-flow-{light,dark}.svg`、`dsh-fast-hero.png` 与 `dsh-fast-demo.*` 保留在原处以防外链失效，README 不再引用。
 
 Topics：`dsh`, `dsh-plugin`, `deepseek-harness`, `deepseek`, `cordis`, `performance`, `diagnostics`, `profiling`, `context-engineering`, `llm-cache`
 

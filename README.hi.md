@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-dark.svg">
-  <img src="docs/assets/dsh-fast-flow-light.svg" width="100%" alt="dsh-fast डेटा प्रवाह: session/event → collector का O(1) फ़ोल्ड → snapshot() टाइमर पर → /fast और fast_report; स्नैपशॉट dsh_fast स्टोरेज डोमेन में लिखे जाते हैं">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-hero-en-dark.webp">
+  <img src="docs/assets/dsh-fast-hero-en-light.webp" width="100%" alt="dsh-fast: एक ही /fast रिपोर्ट सत्र लोड, spill हिट, compaction, संदर्भ बजट का बँटवारा और LLM कैश हिट दर दिखाती है (वास्तविक फ़ील्ड, उदाहरण मान)">
 </picture>
 
 # dsh-fast
@@ -37,6 +37,11 @@ dsh plugin --profile <name> add dsh-fast
 ## यह क्या है
 
 `dsh-fast` एक DeepSeek Harness सत्र का स्वास्थ्य-परीक्षण है: एक `/fast` से सत्र लोड समय, कितने टूल परिणाम spill हुए, कितने compaction चले, संदर्भ बजट system prompt / टूल schema / बातचीत इतिहास में कैसे बँटा है, और LLM कैश हिट दर दिखती है। यह पूर्णतः केवल-पठन है: `session/created`, `session/event` और `session/disposed` सुनता है, हर घटना को O(1) में fold करता है, स्नैपशॉट टाइमर पर लेता है, और मॉडल अनुरोध या टूल परिणाम के किसी waterfall में कभी नहीं घुसता। मेट्रिक्स `dsh_fast` स्टोरेज डोमेन (प्रति सत्र एक सीमित इतिहास) में जाते हैं, सत्र लॉग में नहीं; रिपोर्ट की पहचान और वैकल्पिक कार्य निर्देशिका दिखाने से पहले सैनिटाइज़ की जाती हैं।
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-fast-flow-v5-light.svg" width="100%" alt="dsh-fast पाइपलाइन: इवेंट चैनल append पथ पर काउंटर fold करता है; सैंपलिंग चैनल हर 60 सेकंड में tokenMeter, systemPrompt और sessionQuery पढ़ता है; दोनों पाँच खंडों वाले एक स्नैपशॉट में मिलते हैं, जिसे टाइमर dsh_fast डोमेन में लिखता है और माँग पर रिपोर्ट /fast टेक्स्ट तथा fast_report JSON बनाती है; /fast --history डोमेन से वापस पढ़ता है">
+</picture>
 
 ## तीन चरणों में शुरुआत
 
@@ -308,7 +313,7 @@ node scripts/check-readme-sync.mjs
 pnpm pack
 ```
 
-README की छवियाँ [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) से बनती हैं (Python 3 मानक लाइब्रेरी, Pillow की आवश्यकता नहीं); यह हल्का/गहरा जोड़ा `docs/assets/dsh-fast-flow-{light,dark}.svg` लिखता है और idempotent है। पुराना एक-थीम `docs/assets/dsh-fast-flow.svg`, `dsh-fast-hero.png` और `dsh-fast-demo.*` बाहरी लिंक के 404 से बचने के लिए वहीं रखे गए हैं; README अब उन्हें संदर्भित नहीं करते।
+README की छवियाँ [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) से बनती हैं (hero रास्टर Pillow से, संरचना-चित्र हाथ से लिखे SVG से); यह `docs/assets/dsh-fast-hero-{zh,en}-{light,dark}.webp` और `docs/assets/dsh-fast-flow-v5-{light,dark}.svg` लिखता है और idempotent है। पुराने एक-थीम `docs/assets/dsh-fast-flow.svg`, `dsh-fast-flow-{light,dark}.svg`, `dsh-fast-hero.png` और `dsh-fast-demo.*` बाहरी लिंक के 404 से बचने के लिए वहीं रखे गए हैं; README अब उन्हें संदर्भित नहीं करते।
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `deepseek`, `cordis`, `performance`, `diagnostics`, `profiling`, `context-engineering`, `llm-cache`
 

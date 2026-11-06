@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="660" viewBox="0 0 1100 660" role="img" aria-label="dsh-fast pipeline: the append-time event channel folds counters for request/header, assistant/message, compaction and tool/result; the setInterval sampling channel reads the optional tokenMeter, systemPrompt and sessionQuery services; both merge into one five-section snapshot (load, spill, compaction, context, cache), which the timer persists into the dsh_fast storage domain and the on-demand report builds into /fast text and fast_report JSON; /fast --history reads the domain back">
+<title>dsh-fast: two channels, one snapshot, three surfaces</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#f9f6fd"/><stop offset="1" stop-color="#e4eaf8"/></linearGradient>
+<filter id="soft" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#2a2350" flood-opacity="0.1"/></filter>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4B67B4"/></marker>
+<marker id="arr-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#8a90a4"/></marker>
+</defs>
+<rect width="1100" height="660" fill="url(#bg)"/>
+<text x="44" y="56" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="27" font-weight="700" text-anchor="start">dsh-fast</text>
+<text x="44" y="84" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="13.5" text-anchor="start">two channels — event fold and timer sampling — merge into one snapshot, then split into command, tool and storage</text>
+<rect x="864" y="30" width="192" height="28" rx="14" fill="#eaeefa" stroke="#c2ccea" stroke-width="1"/>
+<text x="960" y="48.5" fill="#4B67B4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="middle">read-only · off the model path</text>
+<rect x="44" y="104" width="492" height="164" rx="20" fill="#ffffff" stroke="#e6e2ef" stroke-width="1" filter="url(#soft)"/>
+<rect x="64" y="114" width="4" height="16" rx="2" fill="#4B67B4"/>
+<text x="77" y="127" fill="#161a26" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="14" font-weight="700" text-anchor="start">Event channel</text>
+<text x="516" y="126.5" fill="#8a90a4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="11" text-anchor="end">append-time · O(1) per event</text>
+<path d="M64 138L516 138" fill="none" stroke="#e6e2ef" stroke-width="1" stroke-linecap="round"/>
+<text x="64" y="152" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" text-anchor="start">request/header</text>
+<text x="252" y="152" fill="#4B67B4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">→</text>
+<text x="270" y="152" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">time to first request (ms)</text>
+<text x="64" y="176" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" text-anchor="start">assistant/message</text>
+<text x="252" y="176" fill="#4B67B4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">→</text>
+<text x="270" y="176" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">usage: input / cache read·write / output</text>
+<text x="64" y="200" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" text-anchor="start">compaction/start</text>
+<text x="252" y="200" fill="#4B67B4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">→</text>
+<text x="270" y="200" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">count + manual | automatic</text>
+<text x="64" y="224" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" text-anchor="start">compaction/summary</text>
+<text x="252" y="224" fill="#4B67B4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">→</text>
+<text x="270" y="224" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">shadowedTokenCount (summed)</text>
+<text x="64" y="248" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" text-anchor="start">tool/result</text>
+<text x="252" y="248" fill="#4B67B4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">→</text>
+<text x="270" y="248" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11.5" text-anchor="start">spill notice marker (heuristic)</text>
+<rect x="564" y="104" width="492" height="164" rx="20" fill="#ffffff" stroke="#e6e2ef" stroke-width="1" filter="url(#soft)"/>
+<rect x="584" y="114" width="4" height="16" rx="2" fill="#4B67B4"/>
+<text x="597" y="127" fill="#161a26" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="14" font-weight="700" text-anchor="start">Sampling channel</text>
+<text x="1036" y="126.5" fill="#8a90a4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="11" text-anchor="end">setInterval(60s) · async</text>
+<path d="M584 138L1036 138" fill="none" stroke="#e6e2ef" stroke-width="1" stroke-linecap="round"/>
+<text x="584" y="152" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">live sessions → skip clean → assemble</text>
+<rect x="584" y="160" width="90" height="36" rx="10" fill="#f5f3fb" stroke="#b9c3dd" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="629" y="184" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" text-anchor="middle">tokenMeter</text>
+<text x="629" y="216" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="middle">total / surface</text>
+<rect x="690.667" y="160" width="104" height="36" rx="10" fill="#f5f3fb" stroke="#b9c3dd" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="742.667" y="184" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" text-anchor="middle">systemPrompt</text>
+<text x="742.667" y="216" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="middle">four buckets</text>
+<rect x="811.333" y="160" width="104" height="36" rx="10" fill="#f5f3fb" stroke="#b9c3dd" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="863.333" y="184" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" text-anchor="middle">sessionQuery</text>
+<text x="863.333" y="216" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="middle">system node</text>
+<rect x="932" y="160" width="104" height="36" rx="10" fill="#f5f3fb" stroke="#c2ccea" stroke-width="1.2"/>
+<text x="984" y="184" fill="#161a26" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" text-anchor="middle">header.tools</text>
+<text x="984" y="216" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="middle">tool schema</text>
+<text x="584" y="244" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">optional: missing ⇒ heuristic / one bucket / sync read — warned once</text>
+<path d="M400 268C400 274 470 278 546 278" fill="none" stroke="#4B67B4" stroke-width="1.6" stroke-linecap="round" marker-end="url(#none)"/>
+<path d="M720 268C720 274 640 278 554 278" fill="none" stroke="#4B67B4" stroke-width="1.6" stroke-linecap="round" marker-end="url(#none)"/>
+<circle cx="550" cy="278" r="4.2" fill="#4B67B4"/>
+<path d="M550 280L550 291" fill="none" stroke="#4B67B4" stroke-width="1.6" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="44" y="292" width="1012" height="104" rx="20" fill="#ffffff" stroke="#c2ccea" stroke-width="1.4" filter="url(#soft)"/>
+<rect x="64" y="302" width="4" height="16" rx="2" fill="#4B67B4"/>
+<text x="77" y="315" fill="#4B67B4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="14" font-weight="700" text-anchor="start">snapshot() — five sections</text>
+<text x="1036" y="314.5" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="end">the only place tokenMeter is read</text>
+<text x="64" y="338" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">surface = meter.surface − system · nothing is measured on the append path</text>
+<rect x="64" y="350" width="180" height="38" rx="10" fill="#f5f3fb" stroke="#e6e2ef" stroke-width="1"/>
+<text x="78" y="368" fill="#4B67B4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" font-weight="700" text-anchor="start">load</text>
+<text x="78" y="382" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">kind · seed · TTFR</text>
+<rect x="262" y="350" width="180" height="38" rx="10" fill="#f5f3fb" stroke="#e6e2ef" stroke-width="1"/>
+<text x="276" y="368" fill="#4B67B4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" font-weight="700" text-anchor="start">spill</text>
+<text x="276" y="382" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">hits (heuristic)</text>
+<rect x="460" y="350" width="180" height="38" rx="10" fill="#f5f3fb" stroke="#e6e2ef" stroke-width="1"/>
+<text x="474" y="368" fill="#4B67B4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" font-weight="700" text-anchor="start">compaction</text>
+<text x="474" y="382" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">count · manual/auto</text>
+<rect x="658" y="350" width="180" height="38" rx="10" fill="#f5f3fb" stroke="#e6e2ef" stroke-width="1"/>
+<text x="672" y="368" fill="#4B67B4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" font-weight="700" text-anchor="start">context</text>
+<text x="672" y="382" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">system · schema · surface</text>
+<rect x="856" y="350" width="180" height="38" rx="10" fill="#f5f3fb" stroke="#e6e2ef" stroke-width="1"/>
+<text x="870" y="368" fill="#4B67B4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="13" font-weight="700" text-anchor="start">cache</text>
+<text x="870" y="382" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">usage · hit rate</text>
+<rect x="44" y="416" width="492" height="124" rx="20" fill="#ffffff" stroke="#e6e2ef" stroke-width="1" filter="url(#soft)"/>
+<rect x="64" y="426" width="4" height="16" rx="2" fill="#4B67B4"/>
+<text x="77" y="439" fill="#161a26" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="14" font-weight="700" text-anchor="start">dsh_fast · sessions</text>
+<text x="516" y="438.5" fill="#8a90a4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="11" text-anchor="end">storage domain</text>
+<path d="M64 450L516 450" fill="none" stroke="#e6e2ef" stroke-width="1" stroke-linecap="round"/>
+<text x="64" y="466" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">one bounded history per session · maxHistorySamples = 20</text>
+<path d="M64 512L516 512" fill="none" stroke="#e6e2ef" stroke-width="1" stroke-linecap="round" stroke-dasharray="3 4"/>
+<rect x="64" y="502" width="20" height="10" rx="4" fill="#4B67B4" opacity="0.28"/>
+<rect x="97" y="496" width="20" height="16" rx="4" fill="#4B67B4" opacity="0.325"/>
+<rect x="130" y="490" width="20" height="22" rx="4" fill="#4B67B4" opacity="0.37"/>
+<rect x="163" y="494" width="20" height="18" rx="4" fill="#4B67B4" opacity="0.415"/>
+<rect x="196" y="486" width="20" height="26" rx="4" fill="#4B67B4" opacity="0.46"/>
+<rect x="229" y="492" width="20" height="20" rx="4" fill="#4B67B4" opacity="0.505"/>
+<rect x="262" y="482" width="20" height="30" rx="4" fill="#4B67B4" opacity="0.55"/>
+<rect x="295" y="488" width="20" height="24" rx="4" fill="#4B67B4" opacity="0.595"/>
+<rect x="328" y="478" width="20" height="34" rx="4" fill="#4B67B4" opacity="0.64"/>
+<rect x="361" y="484" width="20" height="28" rx="4" fill="#4B67B4" opacity="0.685"/>
+<rect x="394" y="474" width="20" height="38" rx="4" fill="#4B67B4" opacity="0.73"/>
+<rect x="427" y="480" width="20" height="32" rx="4" fill="#4B67B4" opacity="0.775"/>
+<rect x="460" y="470" width="20" height="42" rx="4" fill="#4B67B4" opacity="0.82"/>
+<rect x="493" y="476" width="20" height="36" rx="4" fill="#4B67B4" opacity="0.865"/>
+<text x="64" y="530" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">written by the timer, not the session log</text>
+<rect x="564" y="416" width="492" height="124" rx="20" fill="#ffffff" stroke="#e6e2ef" stroke-width="1" filter="url(#soft)"/>
+<rect x="584" y="426" width="4" height="16" rx="2" fill="#4B67B4"/>
+<text x="597" y="439" fill="#161a26" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="14" font-weight="700" text-anchor="start">buildReport()</text>
+<text x="1036" y="438.5" fill="#8a90a4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="11" text-anchor="end">pure · no I/O</text>
+<path d="M584 450L1036 450" fill="none" stroke="#e6e2ef" stroke-width="1" stroke-linecap="round"/>
+<text x="584" y="466" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">thresholds: system 20k · schema 8k · surface 60k · cache 10%</text>
+<text x="584" y="490" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">crossed line → one suggestion; sanitize sessionId / cwd</text>
+<text x="584" y="514" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">report = snapshot + generator · version · generatedAt</text>
+<path d="M294 396L294 416" fill="none" stroke="#4B67B4" stroke-width="1.6" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="306" y="410" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">persist · timer</text>
+<path d="M814 396L814 416" fill="none" stroke="#4B67B4" stroke-width="1.6" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="826" y="410" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">on demand</text>
+<rect x="44" y="560" width="1012" height="64" rx="18" fill="#ffffff" stroke="#e6e2ef" stroke-width="1" filter="url(#soft)"/>
+<path d="M730 572L730 612" fill="none" stroke="#e6e2ef" stroke-width="1" stroke-linecap="round"/>
+<text x="64" y="588" fill="#4B67B4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="14.5" font-weight="700" text-anchor="start">/fast</text>
+<text x="64" y="608" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">text report for humans · --history [n] reads the domain</text>
+<text x="750" y="588" fill="#4B67B4" font-family="'Consolas','SFMono-Regular','Menlo',ui-monospace,monospace" font-size="14.5" font-weight="700" text-anchor="start">fast_report</text>
+<text x="750" y="608" fill="#4d5261" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">JSON for the model · same numbers, rendered as text</text>
+<path d="M400 540L400 560" fill="none" stroke="#4B67B4" stroke-width="1.6" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="5 4"/>
+<text x="412" y="554" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">--history [n] read-back</text>
+<path d="M640 540L640 560" fill="none" stroke="#4B67B4" stroke-width="1.6" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M900 540L900 560" fill="none" stroke="#4B67B4" stroke-width="1.6" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="44" y="648" fill="#8a90a4" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Segoe UI',sans-serif" font-size="11" text-anchor="start">read-only · no network · no waterfall listeners · sampling stays off the append path</text>
+</svg>
