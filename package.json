@@ -29,10 +29,10 @@
     "CHANGELOG.md",
     "THIRD_PARTY_NOTICES.md",
     "README.md",
-    "README-zh.md",
-    "README-es.md",
-    "README-pt.md",
-    "README-hi.md",
+    "README.en.md",
+    "README.es.md",
+    "README.pt.md",
+    "README.hi.md",
     "LICENSE",
     "PRIVACY.md",
     "icon.svg"
@@ -145,14 +145,15 @@
     "@deepseek-ai/dsh-system-prompt": "0.2.2-rc.3",
     "@deepseek-ai/dsh-token-meter": "0.2.2-rc.3",
     "@deepseek-ai/dsh-tools": "0.2.2-rc.3",
-    "@deepseek-ai/schemastery": "3.18.5",
+    "@deepseek-ai/schemastery": "~3.19.0",
     "@types/node": "^22.19.0",
     "@vitest/coverage-v8": "^3.2.0",
     "oxlint": "0.18.1",
     "vitest": "^3.2.0",
     "@deepseek-ai/dsh-working-directory": "0.2.2-rc.3",
     "tsdown": "^0.22.14",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "@deepseek-ai/dsh-package-manifest": "0.2.2-rc.3"
   },
   "scripts": {
     "build": "node scripts/prepare.mjs",
