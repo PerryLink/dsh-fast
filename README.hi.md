@@ -36,7 +36,7 @@ dsh plugin --profile <name> add dsh-fast
 
 ## यह क्या है
 
-`dsh-fast` एक DeepSeek Harness सत्र का स्वास्थ्य-परीक्षण है: एक `/fast` से सत्र लोड समय, कितने टूल परिणाम spill हुए, कितने compaction चले, संदर्भ बजट system prompt / टूल schema / बातचीत इतिहास में कैसे बँटा है, और LLM कैश हिट दर दिखती है। यह पूर्णतः केवल-पठन है: `session/created`, `session/event` और `session/disposed` सुनता है, हर घटना को O(1) में fold करता है, स्नैपशॉट टाइमर पर लेता है, और मॉडल अनुरोध या टूल परिणाम के किसी waterfall में कभी नहीं घुसता। मेट्रिक्स `dsh_fast` स्टोरेज डोमेन (प्रति सत्र एक सीमित इतिहास) में जाते हैं, सत्र लॉग में नहीं; रिपोर्ट की पहचान और वैकल्पिक कार्य निर्देशिका दिखाने से पहले सैनिटाइज़ की जाती हैं।
+`dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` एक DeepSeek Harness सत्र का स्वास्थ्य-परीक्षण है: एक `/fast` से सत्र लोड समय, कितने टूल परिणाम spill हुए, कितने compaction चले, संदर्भ बजट system prompt / टूल schema / बातचीत इतिहास में कैसे बँटा है, और LLM कैश हिट दर दिखती है। यह पूर्णतः केवल-पठन है: `session/created`, `session/event` और `session/disposed` सुनता है, हर घटना को O(1) में fold करता है, स्नैपशॉट टाइमर पर लेता है, और मॉडल अनुरोध या टूल परिणाम के किसी waterfall में कभी नहीं घुसता। मेट्रिक्स `dsh_fast` स्टोरेज डोमेन (प्रति सत्र एक सीमित इतिहास) में जाते हैं, सत्र लॉग में नहीं; रिपोर्ट की पहचान और वैकल्पिक कार्य निर्देशिका दिखाने से पहले सैनिटाइज़ की जाती हैं।
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
@@ -48,9 +48,9 @@ dsh plugin --profile <name> add dsh-fast
 1. **इंस्टॉल** (दो चैनल):
 
    ```sh
-   # git चैनल (नवीनतम main; #v0.2.28 से वर्शन पिन करें)
+   # git चैनल (नवीनतम main; #v0.2.29 से वर्शन पिन करें)
    dsh plugin --profile web add github:PerryLink/dsh-fast
-   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.28
+   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.29
    # npm चैनल (प्रकाशित वर्शन)
    dsh plugin --profile web add dsh-fast
    ```
@@ -276,7 +276,7 @@ rc.2 का `Session.append` `ignorable` मार्कर या बाहर�
 
 ## अन्य DSH प्लगइनों के साथ इंटरऑपरेबिलिटी
 
-यह README DeepSeek Harness `0.2.1-alpha.1` को लक्षित करता है (समर्थित सीमा के लिए संगतता देखें)। यह प्लगइन ठीक एक कमांड (`/fast`), एक टूल (`fast_report`), तीन केवल-पठन listener (`session/created`, `session/event`, `session/disposed`) और एक `dsh_fast` स्टोरेज डोमेन पंजीकृत करता है: कोई service नहीं देता, कोई client slot पंजीकृत नहीं करता, कोई `webServer` रूट पंजीकृत नहीं करता और किसी waterfall को नहीं सुनता—इसलिए यह मॉडल अनुरोध, टूल परिणाम या सत्र सतह को नहीं बदल सकता, और किसी दूसरे प्लगइन के हॉट पाथ में भाग नहीं लेता।
+यह README DeepSeek Harness `dsh-v0.2.2-rc.4`（2026-11-18）；`0.2.2-rc.4` को लक्षित करता है (समर्थित सीमा के लिए संगतता देखें)। यह प्लगइन ठीक एक कमांड (`/fast`), एक टूल (`fast_report`), तीन केवल-पठन listener (`session/created`, `session/event`, `session/disposed`) और एक `dsh_fast` स्टोरेज डोमेन पंजीकृत करता है: कोई service नहीं देता, कोई client slot पंजीकृत नहीं करता, कोई `webServer` रूट पंजीकृत नहीं करता और किसी waterfall को नहीं सुनता—इसलिए यह मॉडल अनुरोध, टूल परिणाम या सत्र सतह को नहीं बदल सकता, और किसी दूसरे प्लगइन के हॉट पाथ में भाग नहीं लेता।
 
 एकमात्र ज्ञात टकराव होस्ट के client कमांड नामस्थान में है: `/fast` होस्ट कमांड नाम है, और यदि दूसरा प्लगइन भी `fast` नाम की **client** `commandUi` योगदान पंजीकृत करता है, तो स्लैश कमांड मेनू पूरा `/` स्रोत छोड़ सकता है। यह प्लगइन रनटाइम पर नाम बदलकर इसे टाल नहीं सकता। उपाय: दूसरे प्लगइन की `fast` client कमांड बंद/नाम बदलें, या एक प्लगइन हटाएँ। बिना डुप्लिकेट client योगदान के `/fast` और `fast_report` काम करते हैं।
 
@@ -284,12 +284,12 @@ rc.2 का `Session.append` `ignorable` मार्कर या बाहर�
 
 | आयाम | स्थिति |
 |---|---|
-| Harness | DeepSeek Harness `dsh-v0.2.1-alpha.1` (2026-09-18 को अनुकूलित): सत्र सतह अब वैकल्पिक `sessionQuery` सेवा से पढ़ी जाती है — पदावनत सिंक्रोनस `Session.eventAt(seq)` एक्सेसर हट गया और उसकी जगह समतुल्य सिंक्रोनस रीड fallback है — और सभी रजिस्ट्रेशन अब एक ही lifecycle effect में रहते हैं जो उन्हें उल्टे क्रम में मुक्त करता है। आंतरिक बदलाव: एक ही लॉग पर मेट्रिक्स बिल्कुल समान रहते हैं। 2026-10-04 को स्थानीय गेट शृंखला (तीन typecheck + 71 टेस्ट) से सत्यापित; compat workflow प्रकाशित pins के साथ profile इंस्टॉल स्मोक दोहराता है। |
+| Harness | DeepSeek Harness `dsh-v0.2.2-rc.4` (2026-11-18 को अनुकूलित): सत्र सतह अब वैकल्पिक `sessionQuery` सेवा से पढ़ी जाती है — पदावनत सिंक्रोनस `Session.eventAt(seq)` एक्सेसर हट गया और उसकी जगह समतुल्य सिंक्रोनस रीड fallback है — और सभी रजिस्ट्रेशन अब एक ही lifecycle effect में रहते हैं जो उन्हें उल्टे क्रम में मुक्त करता है। आंतरिक बदलाव: एक ही लॉग पर मेट्रिक्स बिल्कुल समान रहते हैं। 2026-11-18 को स्थानीय गेट शृंखला (तीन typecheck + 71 टेस्ट) से सत्यापित; compat workflow प्रकाशित pins के साथ profile इंस्टॉल स्मोक दोहराता है। |
 | Node | `^22.19.0 \|\| >=24.0.0`, केवल ESM (`"type": "module"`)। |
 | प्लेटफ़ॉर्म | जहाँ DSH चलता है (शुद्ध host; कोई नेटवर्क नहीं, कोई ब्राउज़र-आधा नहीं)। |
 | मॉडल | टेक्स्ट मॉडल पर्याप्त है; `fast_report` संरचित JSON लौटाता है और अतिरिक्त मॉडल क्षमता नहीं माँगता। |
 
-peer निर्भरताएँ: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, और `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` (`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0 || >=0.2.0-0 <0.3.0 || >=0.2.1-0 <0.3.0`; devDependencies `0.2.1-rc.2` पर पिन); `0.1.2-rc.1` पंक्ति रनटाइम पर pre-0.1.5 `header.system` के संरचनात्मक fallback से अभी भी समर्थित है।
+peer निर्भरताएँ: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, और `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` (`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0 || >=0.2.0-0 <0.3.0 || >=0.2.1-0 <0.3.0 || >=0.2.2-0 <0.3.0`; devDependencies `0.2.2-rc.4` पर पिन); `0.1.2-rc.1` पंक्ति रनटाइम पर pre-0.1.5 `header.system` के संरचनात्मक fallback से अभी भी समर्थित है।
 
 ## इकोसिस्टम और गुणवत्ता
 

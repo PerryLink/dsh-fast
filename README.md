@@ -36,7 +36,7 @@ dsh plugin --profile <name> add dsh-fast
 
 ## 它是什么
 
-`dsh-fast` 是给 DeepSeek Harness 会话做的一次体检：一条 `/fast` 就能看到这次会话的加载耗时、有多少工具结果被 spill、compaction 触发了几次、上下文预算被系统提示词 / 工具 schema / 对话历史各吃掉多少，以及 LLM 缓存命中率。它严格只读：监听 `session/created`、`session/event`、`session/disposed`，每个事件做 O(1) 折叠，快照在定时器上采样，绝不进入模型请求或工具结果的任何 waterfall。度量写入 `dsh_fast` 存储域（每会话一段有界历史），不写会话日志；报告里的会话标识与可选工作目录在展示前已脱敏。
+`dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` 是给 DeepSeek Harness 会话做的一次体检：一条 `/fast` 就能看到这次会话的加载耗时、有多少工具结果被 spill、compaction 触发了几次、上下文预算被系统提示词 / 工具 schema / 对话历史各吃掉多少，以及 LLM 缓存命中率。它严格只读：监听 `session/created`、`session/event`、`session/disposed`，每个事件做 O(1) 折叠，快照在定时器上采样，绝不进入模型请求或工具结果的任何 waterfall。度量写入 `dsh_fast` 存储域（每会话一段有界历史），不写会话日志；报告里的会话标识与可选工作目录在展示前已脱敏。
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
@@ -48,9 +48,9 @@ dsh plugin --profile <name> add dsh-fast
 1. **安装**（两条通道）：
 
    ```sh
-   # git 通道（最新 main；钉版本用 #v0.2.28）
+   # git 通道（最新 main；钉版本用 #v0.2.29）
    dsh plugin --profile web add github:PerryLink/dsh-fast
-   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.28
+   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.29
    # npm 通道（已发布版本）
    dsh plugin --profile web add dsh-fast
    ```
@@ -276,7 +276,7 @@ rc.2 的 `Session.append` 没有 `ignorable` 标记能力，也没有外部事�
 
 ## 与其他 DSH 插件的互操作性
 
-本 README 面向 DeepSeek Harness `0.2.1-alpha.1`（运行时兼容面见「兼容性」）。本插件只注册一个命令（`/fast`）、一个工具（`fast_report`）、三个只读监听器（`session/created`、`session/event`、`session/disposed`）与一块 `dsh_fast` 存储域：不提供任何 service、不注册 client slot、不注册 `webServer` 路由、不监听任何 waterfall——因此不会改写模型请求、工具结果或会话表面，也不参与其他插件的热点路径。
+本 README 面向 DeepSeek Harness `dsh-v0.2.2-rc.4`（2026-11-18）；`0.2.2-rc.4`（运行时兼容面见「兼容性」）。本插件只注册一个命令（`/fast`）、一个工具（`fast_report`）、三个只读监听器（`session/created`、`session/event`、`session/disposed`）与一块 `dsh_fast` 存储域：不提供任何 service、不注册 client slot、不注册 `webServer` 路由、不监听任何 waterfall——因此不会改写模型请求、工具结果或会话表面，也不参与其他插件的热点路径。
 
 唯一的已知冲突在宿主的 client 命令命名空间：`/fast` 是宿主命令名，如果另一个插件也注册了名为 `fast` 的 **client** `commandUi` 贡献，宿主的斜杠命令菜单可能整组丢弃 `/` 来源。该冲突无法由本插件在运行时改名规避。处理方式：禁用/重命名另一个插件的 `fast` client 命令，或移除其中一个插件。没有重复 client 贡献时，`/fast` 与 `fast_report` 正常工作。
 
@@ -284,12 +284,12 @@ rc.2 的 `Session.append` 没有 `ignorable` 标记能力，也没有外部事�
 
 | 维度 | 状态 |
 |---|---|
-| Harness | DeepSeek Harness `dsh-v0.2.1-alpha.1`（2026-09-18 已适配）：会话表面改经可选的 `sessionQuery` 服务读取——已弃用的同步 `Session.eventAt(seq)` 访问器退役，改由等价的同步回退读兜底；所有注册收进同一个 lifecycle effect 并按逆序释放。属内部实现变更：同一日志下上报指标逐字相同。已于 2026-10-04 核验本地门控链（三把 typecheck 尺子 + 71 项测试）；compat workflow 用已发布钉号重跑 profile 安装冒烟。 |
+| Harness | DeepSeek Harness `dsh-v0.2.2-rc.4`（2026-11-18 已适配）：会话表面改经可选的 `sessionQuery` 服务读取——已弃用的同步 `Session.eventAt(seq)` 访问器退役，改由等价的同步回退读兜底；所有注册收进同一个 lifecycle effect 并按逆序释放。属内部实现变更：同一日志下上报指标逐字相同。已于 2026-11-18 核验本地门控链（三把 typecheck 尺子 + 71 项测试）；compat workflow 用已发布钉号重跑 profile 安装冒烟。 |
 | Node | `^22.19.0 \|\| >=24.0.0`，纯 ESM（`"type": "module"`）。 |
 | 平台 | 任何 DSH 可运行处（纯 host；无网络、无浏览器半）。 |
 | 模型 | 文本模型即可；`fast_report` 以结构化 JSON 返回，无需额外模型能力。 |
 
-peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.4`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-session-query`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0 || >=0.2.0-0 <0.3.0 || >=0.2.1-0 <0.3.0`；devDependencies 钉 `0.2.1-rc.2`）；`0.1.2-rc.1` 旧线仍通过结构式回退读取 pre-0.1.5 的 `header.system` 在运行时受支持。
+peer 依赖：`@deepseek-ai/cordis ^4.0.2`、`@deepseek-ai/schemastery ^3.18.4`，以及 `@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-commands`、`@deepseek-ai/dsh-compaction`、`@deepseek-ai/dsh-session-query`、`@deepseek-ai/dsh-storage-domain`（`>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0 || >=0.2.0-0 <0.3.0 || >=0.2.1-0 <0.3.0 || >=0.2.2-0 <0.3.0`；devDependencies 钉 `0.2.2-rc.4`）；`0.1.2-rc.1` 旧线仍通过结构式回退读取 pre-0.1.5 的 `header.system` 在运行时受支持。
 
 ## 生态与质量
 

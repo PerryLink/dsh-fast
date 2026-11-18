@@ -214,7 +214,7 @@ HERO = {
             ],
             legend=["系统 400 · 40%", "工具 schema 200 · 20%", "会话表面 400 · 40%"],
             foot="6 个阈值均未触发 · 建议 0 条",
-            ver="dsh-fast 0.2.28",
+            ver="dsh-fast 0.2.29",
         ),
     ),
     "en": dict(
@@ -237,7 +237,7 @@ HERO = {
             ],
             legend=["system 400 · 40%", "tool schema 200 · 20%", "surface 400 · 40%"],
             foot="no threshold crossed · suggestions: none",
-            ver="dsh-fast 0.2.28",
+            ver="dsh-fast 0.2.29",
         ),
     ),
 }

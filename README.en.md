@@ -36,7 +36,7 @@ dsh plugin --profile <name> add dsh-fast
 
 ## What it is
 
-`dsh-fast` is a health check for a DeepSeek Harness session: one `/fast` shows the session-load time, how many tool results were spilled, how many compactions fired, how the context budget is split across system prompt / tool schema / conversation history, and the LLM cache hit rate. It is strictly read-only: it listens on `session/created`, `session/event`, and `session/disposed`, folds every event in O(1), samples snapshots on a timer, and never enters any model-request or tool-result waterfall. Metrics are written to the `dsh_fast` storage domain (one bounded history per session), not to the session log; the report identity and the optional working directory are sanitized before display.
+`dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` is a health check for a DeepSeek Harness session: one `/fast` shows the session-load time, how many tool results were spilled, how many compactions fired, how the context budget is split across system prompt / tool schema / conversation history, and the LLM cache hit rate. It is strictly read-only: it listens on `session/created`, `session/event`, and `session/disposed`, folds every event in O(1), samples snapshots on a timer, and never enters any model-request or tool-result waterfall. Metrics are written to the `dsh_fast` storage domain (one bounded history per session), not to the session log; the report identity and the optional working directory are sanitized before display.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
@@ -48,9 +48,9 @@ dsh plugin --profile <name> add dsh-fast
 1. **Install** (two channels):
 
    ```sh
-   # git channel (latest main; pin a version with #v0.2.28)
+   # git channel (latest main; pin a version with #v0.2.29)
    dsh plugin --profile web add github:PerryLink/dsh-fast
-   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.28
+   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.29
    # npm channel (published version)
    dsh plugin --profile web add dsh-fast
    ```
@@ -276,7 +276,7 @@ There is exactly one known collision: if another plugin registers a **client** `
 
 ## Interoperability with other DSH plugins
 
-This README targets DeepSeek Harness `0.2.1-alpha.1` (see Compatibility for the supported range). This plugin registers exactly one command (`/fast`), one tool (`fast_report`), three read-only listeners (`session/created`, `session/event`, `session/disposed`), and one `dsh_fast` storage domain: it provides no services, registers no client slots, registers no `webServer` routes, and listens on no waterfall—so it cannot rewrite the model request, tool results, or the session surface, and it does not participate in any other plugin's hot path.
+This README targets DeepSeek Harness `dsh-v0.2.2-rc.4`（2026-11-18）；`0.2.2-rc.4` (see Compatibility for the supported range). This plugin registers exactly one command (`/fast`), one tool (`fast_report`), three read-only listeners (`session/created`, `session/event`, `session/disposed`), and one `dsh_fast` storage domain: it provides no services, registers no client slots, registers no `webServer` routes, and listens on no waterfall—so it cannot rewrite the model request, tool results, or the session surface, and it does not participate in any other plugin's hot path.
 
 The only known collision is in the host's client command namespace: `/fast` is a host command name, and if another plugin also registers a **client** `commandUi` contribution named `fast`, the host's slash-command menu can drop the whole `/` source. This plugin cannot rename at runtime to avoid it. Workaround: disable/rename the other plugin's `fast` client command, or remove one of the plugins. `/fast` and `fast_report` keep working when no duplicate client contribution exists.
 
@@ -284,12 +284,12 @@ The only known collision is in the host's client command namespace: `/fast` is a
 
 | Dimension | Status |
 |---|---|
-| Harness | DeepSeek Harness `dsh-v0.2.1-alpha.1` (adapted 2026-09-18): the session surface is read through the optional `sessionQuery` service—the deprecated synchronous `Session.eventAt(seq)` accessor is gone, with an equivalent synchronous read as the fallback—and every registration now lives in one lifecycle effect that releases them in reverse order. Internal implementation change: the reported metrics are identical for the same log. Verified 2026-10-04 against the local gate chain (three typecheck rulers + 71 tests); the compat workflow re-runs the profile install smoke against the published pins. |
+| Harness | DeepSeek Harness `dsh-v0.2.2-rc.4` (adapted 2026-11-18): the session surface is read through the optional `sessionQuery` service—the deprecated synchronous `Session.eventAt(seq)` accessor is gone, with an equivalent synchronous read as the fallback—and every registration now lives in one lifecycle effect that releases them in reverse order. Internal implementation change: the reported metrics are identical for the same log. Verified 2026-11-18 against the local gate chain (three typecheck rulers + 71 tests); the compat workflow re-runs the profile install smoke against the published pins. |
 | Node | `^22.19.0 \|\| >=24.0.0`, ESM only (`"type": "module"`). |
 | Platform | Anywhere DSH runs (pure host; no network, no browser half). |
 | Model | Text models are enough; `fast_report` returns structured JSON and needs no extra model capability. |
 
-Peer dependencies: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` at `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0 || >=0.2.0-0 <0.3.0 || >=0.2.1-0 <0.3.0` (devDependencies pin `0.2.1-rc.2`); the `0.1.2-rc.1` line stays supported at runtime through a structural fallback to the pre-0.1.5 `header.system`.
+Peer dependencies: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, and `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` at `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0 || >=0.2.0-0 <0.3.0 || >=0.2.1-0 <0.3.0 || >=0.2.2-0 <0.3.0` (devDependencies pin `0.2.2-rc.4`); the `0.1.2-rc.1` line stays supported at runtime through a structural fallback to the pre-0.1.5 `header.system`.
 
 ## Ecosystem & quality
 

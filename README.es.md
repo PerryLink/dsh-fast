@@ -36,7 +36,7 @@ dsh plugin --profile <name> add dsh-fast
 
 ## Qué es
 
-`dsh-fast` es un chequeo de salud de una sesión de DeepSeek Harness: un solo `/fast` muestra el tiempo de carga de la sesión, cuántos resultados de herramienta se derramaron (spill), cuántas compactaciones se dispararon, cómo se reparte el presupuesto de contexto entre system prompt / schema de herramientas / historial de conversación, y la tasa de aciertos de la caché LLM. Es estrictamente de solo lectura: escucha `session/created`, `session/event` y `session/disposed`, pliega cada evento en O(1), muestrea instantáneas en un temporizador y nunca entra en el waterfall de la petición del modelo ni de los resultados de herramientas. Las métricas se escriben en el dominio de almacenamiento `dsh_fast` (una historia acotada por sesión), no en el log de sesión; la identidad del informe y el directorio de trabajo opcional se sanean antes de mostrarse.
+`dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` es un chequeo de salud de una sesión de DeepSeek Harness: un solo `/fast` muestra el tiempo de carga de la sesión, cuántos resultados de herramienta se derramaron (spill), cuántas compactaciones se dispararon, cómo se reparte el presupuesto de contexto entre system prompt / schema de herramientas / historial de conversación, y la tasa de aciertos de la caché LLM. Es estrictamente de solo lectura: escucha `session/created`, `session/event` y `session/disposed`, pliega cada evento en O(1), muestrea instantáneas en un temporizador y nunca entra en el waterfall de la petición del modelo ni de los resultados de herramientas. Las métricas se escriben en el dominio de almacenamiento `dsh_fast` (una historia acotada por sesión), no en el log de sesión; la identidad del informe y el directorio de trabajo opcional se sanean antes de mostrarse.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
@@ -48,9 +48,9 @@ dsh plugin --profile <name> add dsh-fast
 1. **Instalar** (dos canales):
 
    ```sh
-   # canal git (último main; fija una versión con #v0.2.28)
+   # canal git (último main; fija una versión con #v0.2.29)
    dsh plugin --profile web add github:PerryLink/dsh-fast
-   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.28
+   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.29
    # canal npm (versión publicada)
    dsh plugin --profile web add dsh-fast
    ```
@@ -276,7 +276,7 @@ Hay exactamente un choque conocido: si otro plugin registra una contribución **
 
 ## Interoperabilidad con otros plugins DSH
 
-Este README apunta a DeepSeek Harness `0.2.1-alpha.1` (ver Compatibilidad para el rango soportado). Este plugin registra exactamente un comando (`/fast`), una herramienta (`fast_report`), tres listeners de solo lectura (`session/created`, `session/event`, `session/disposed`) y un dominio de almacenamiento `dsh_fast`: no presta servicios, no registra slots client, no registra rutas `webServer` y no escucha ningún waterfall; por tanto no puede reescribir la petición del modelo, los resultados de herramientas ni la superficie de sesión, y no participa en la ruta caliente de ningún otro plugin.
+Este README apunta a DeepSeek Harness `dsh-v0.2.2-rc.4`（2026-11-18）；`0.2.2-rc.4` (ver Compatibilidad para el rango soportado). Este plugin registra exactamente un comando (`/fast`), una herramienta (`fast_report`), tres listeners de solo lectura (`session/created`, `session/event`, `session/disposed`) y un dominio de almacenamiento `dsh_fast`: no presta servicios, no registra slots client, no registra rutas `webServer` y no escucha ningún waterfall; por tanto no puede reescribir la petición del modelo, los resultados de herramientas ni la superficie de sesión, y no participa en la ruta caliente de ningún otro plugin.
 
 El único choque conocido está en el espacio de nombres client del host: `/fast` es un nombre de comando del host y, si otro plugin registra una contribución **client** `commandUi` llamada `fast`, el menú de comandos puede perder toda la fuente `/`. Este plugin no puede renombrarse en tiempo de ejecución para evitarlo. Solución: desactiva/renombra el comando client `fast` del otro plugin, o elimina uno de los plugins. `/fast` y `fast_report` siguen funcionando si no hay una contribución client duplicada.
 
@@ -284,12 +284,12 @@ El único choque conocido está en el espacio de nombres client del host: `/fast
 
 | Dimensión | Estado |
 |---|---|
-| Harness | DeepSeek Harness `dsh-v0.2.1-alpha.1` (adaptado el 2026-09-18): la superficie de sesión se lee a través del servicio opcional `sessionQuery` — el accesor síncrono obsoleto `Session.eventAt(seq)` desaparece y queda una lectura síncrona equivalente como respaldo — y todos los registros viven ahora en un único efecto de ciclo de vida que los libera en orden inverso. Cambio interno: las métricas son idénticas para el mismo log. Verificado el 2026-10-04 con la cadena de puertas local (tres typecheck + 71 pruebas); el workflow compat repite el smoke de instalación de profile con los pines publicados. |
+| Harness | DeepSeek Harness `dsh-v0.2.2-rc.4` (adaptado el 2026-11-18): la superficie de sesión se lee a través del servicio opcional `sessionQuery` — el accesor síncrono obsoleto `Session.eventAt(seq)` desaparece y queda una lectura síncrona equivalente como respaldo — y todos los registros viven ahora en un único efecto de ciclo de vida que los libera en orden inverso. Cambio interno: las métricas son idénticas para el mismo log. Verificado el 2026-11-18 con la cadena de puertas local (tres typecheck + 71 pruebas); el workflow compat repite el smoke de instalación de profile con los pines publicados. |
 | Node | `^22.19.0 \|\| >=24.0.0`, solo ESM (`"type": "module"`). |
 | Plataforma | Donde corra DSH (host puro; sin red, sin mitad de navegador). |
 | Modelo | Basta un modelo de texto; `fast_report` devuelve JSON estructurado y no exige capacidades extra. |
 
-Dependencias peer: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, y `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` en `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0 || >=0.2.0-0 <0.3.0 || >=0.2.1-0 <0.3.0` (devDependencies fijan `0.2.1-rc.2`); la línea `0.1.2-rc.1` sigue soportada en ejecución mediante un fallback estructural al `header.system` anterior a 0.1.5.
+Dependencias peer: `@deepseek-ai/cordis ^4.0.2`, `@deepseek-ai/schemastery ^3.18.4`, y `@deepseek-ai/dsh-session`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-commands`, `@deepseek-ai/dsh-compaction`, `@deepseek-ai/dsh-session-query`, `@deepseek-ai/dsh-storage-domain` en `>=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0 || >=0.2.0-0 <0.3.0 || >=0.2.1-0 <0.3.0 || >=0.2.2-0 <0.3.0` (devDependencies fijan `0.2.2-rc.4`); la línea `0.1.2-rc.1` sigue soportada en ejecución mediante un fallback estructural al `header.system` anterior a 0.1.5.
 
 ## Ecosistema y calidad
 
