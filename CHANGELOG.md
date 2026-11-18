@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- **Align the devDependency pins and declared host range with the 0.2.2-rc.4 line.** The `@deepseek-ai/dsh-*` devDependencies move from `0.2.2-rc.3` to `0.2.2-rc.4` (the published `next` tag), every `@deepseek-ai/dsh-*` peer range gains the append-only `>=0.2.2-0 <0.3.0` clause, and `engines.dsh` gains the same clause. No runtime code changed.
+- Gates (local, Node 24.22.1 / pnpm 11.7.0): install (lockfile refresh to rc.4) 0, `typecheck` 0, `typecheck:ci` 0, `typecheck:checkout` 0 (against the current master checkout), `test` 0 (11 files / 71 tests), `lint` 0 (3 warnings), `verify:self-contained` 0, `check:lockfile` 0, `verify:readme-sync` 0, `verify:artifacts` 0, `pack:check` 0. `dsh-plugin-doctor@0.4.4 --no-smoke --only R,K`: 16 pass / 2 pre-existing warnings.
+
+
 ## [0.2.28] - 2026-11-04
 
 ### Changed
