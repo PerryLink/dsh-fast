@@ -111,6 +111,10 @@ Every PerryLink plugin can be browsed in the built-in DSH Desktop market: **Mark
 
 ### Examples
 
+![dsh-fast: real terminal run](docs/assets/dsh-fast-demo.gif)
+
+*Animated replay of a real run recorded in this repository.*
+
 These are the plugin's real entry points; install once, then call one.
 
 **Detailed example** — command `/fast`:

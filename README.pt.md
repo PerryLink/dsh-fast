@@ -43,6 +43,11 @@ dsh plugin --profile <name> add dsh-fast
   <img src="docs/assets/dsh-fast-flow-v5-light.svg" width="100%" alt="Fluxo do dsh-fast: o canal de eventos dobra contadores na rota de append; o canal de amostragem lê tokenMeter, systemPrompt e sessionQuery a cada 60 s; ambos convergem em um snapshot de cinco seções que o timer grava no domínio dsh_fast e que o relatório sob demanda transforma em texto de /fast e JSON de fast_report; /fast --history lê o domínio de volta">
 </picture>
 
+![dsh-fast: execução real de terminal](docs/assets/dsh-fast-demo.gif)
+
+*Repetição animada de uma execução real registrada neste repositório.*
+
+
 ## Instalação em três passos
 
 1. **Instalar** (dois canais):

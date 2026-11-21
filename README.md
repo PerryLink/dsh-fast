@@ -36,6 +36,10 @@ dsh plugin --profile <name> add dsh-fast
 
 ## 它是什么
 
+![dsh-fast 真实终端运行](docs/assets/dsh-fast-demo.gif)
+
+*本仓库一次真实运行的动图回放。*
+
 `dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` 是给 DeepSeek Harness 会话做的一次体检：一条 `/fast` 就能看到这次会话的加载耗时、有多少工具结果被 spill、compaction 触发了几次、上下文预算被系统提示词 / 工具 schema / 对话历史各吃掉多少，以及 LLM 缓存命中率。它严格只读：监听 `session/created`、`session/event`、`session/disposed`，每个事件做 O(1) 折叠，快照在定时器上采样，绝不进入模型请求或工具结果的任何 waterfall。度量写入 `dsh_fast` 存储域（每会话一段有界历史），不写会话日志；报告里的会话标识与可选工作目录在展示前已脱敏。
 
 <picture>

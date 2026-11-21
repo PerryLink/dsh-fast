@@ -43,6 +43,11 @@ dsh plugin --profile <name> add dsh-fast
   <img src="docs/assets/dsh-fast-flow-v5-light.svg" width="100%" alt="dsh-fast पाइपलाइन: इवेंट चैनल append पथ पर काउंटर fold करता है; सैंपलिंग चैनल हर 60 सेकंड में tokenMeter, systemPrompt और sessionQuery पढ़ता है; दोनों पाँच खंडों वाले एक स्नैपशॉट में मिलते हैं, जिसे टाइमर dsh_fast डोमेन में लिखता है और माँग पर रिपोर्ट /fast टेक्स्ट तथा fast_report JSON बनाती है; /fast --history डोमेन से वापस पढ़ता है">
 </picture>
 
+![dsh-fast का असली टर्मिनल रन](docs/assets/dsh-fast-demo.gif)
+
+*इस रिपॉज़िटरी में दर्ज असली रन का एनिमेटेड रीप्ले।*
+
+
 ## तीन चरणों में शुरुआत
 
 1. **इंस्टॉल** (दो चैनल):
