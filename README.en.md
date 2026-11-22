@@ -50,9 +50,9 @@ dsh plugin --profile <name> add dsh-fast
 1. **Install** (two channels):
 
    ```sh
-   # git channel (latest main; pin a version with #v0.2.29)
+   # git channel (latest main; pin a version with #v0.2.30)
    dsh plugin --profile web add github:PerryLink/dsh-fast
-   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.29
+   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.30
    # npm channel (published version)
    dsh plugin --profile web add dsh-fast
    ```

@@ -54,9 +54,9 @@ dsh plugin --profile <name> add dsh-fast
 1. **安装**（两条通道）：
 
    ```sh
-   # git 通道（最新 main；钉版本用 #v0.2.29）
+   # git 通道（最新 main；钉版本用 #v0.2.30）
    dsh plugin --profile web add github:PerryLink/dsh-fast
-   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.29
+   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.30
    # npm 通道（已发布版本）
    dsh plugin --profile web add dsh-fast
    ```

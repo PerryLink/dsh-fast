@@ -54,9 +54,9 @@ dsh plugin --profile <name> add dsh-fast
 1. **Instalar** (dois canais):
 
    ```sh
-   # canal git (main mais recente; fixe uma versão com #v0.2.29)
+   # canal git (main mais recente; fixe uma versão com #v0.2.30)
    dsh plugin --profile web add github:PerryLink/dsh-fast
-   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.29
+   dsh plugin --profile web add github:PerryLink/dsh-fast#v0.2.30
    # canal npm (versão publicada)
    dsh plugin --profile web add dsh-fast
    ```
