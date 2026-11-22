@@ -11,6 +11,8 @@
 
 DeepSeek Harness के लिए केवल-पढ़ने योग्य प्रदर्शन निदान: सत्र घटना-धारा को देखता है, मॉडल के हॉट पाथ को कभी नहीं, और सत्र लोड, spill, compaction, संदर्भ इंजेक्शन तथा LLM कैश की लागत अलग-अलग दिखाता है।
 
+अंतिम सत्यापन: DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [इंस्टॉल](#तीन-चरणों-में-शुरुआत) · [कॉन्फ़िगरेशन](#कॉन्फ़िगरेशन) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -36,7 +38,7 @@ dsh plugin --profile <name> add dsh-fast
 
 ## यह क्या है
 
-`dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` एक DeepSeek Harness सत्र का स्वास्थ्य-परीक्षण है: एक `/fast` से सत्र लोड समय, कितने टूल परिणाम spill हुए, कितने compaction चले, संदर्भ बजट system prompt / टूल schema / बातचीत इतिहास में कैसे बँटा है, और LLM कैश हिट दर दिखती है। यह पूर्णतः केवल-पठन है: `session/created`, `session/event` और `session/disposed` सुनता है, हर घटना को O(1) में fold करता है, स्नैपशॉट टाइमर पर लेता है, और मॉडल अनुरोध या टूल परिणाम के किसी waterfall में कभी नहीं घुसता। मेट्रिक्स `dsh_fast` स्टोरेज डोमेन (प्रति सत्र एक सीमित इतिहास) में जाते हैं, सत्र लॉग में नहीं; रिपोर्ट की पहचान और वैकल्पिक कार्य निर्देशिका दिखाने से पहले सैनिटाइज़ की जाती हैं।
+, `dsh-fast` एक DeepSeek Harness सत्र का स्वास्थ्य-परीक्षण है: एक `/fast` से सत्र लोड समय, कितने टूल परिणाम spill हुए, कितने compaction चले, संदर्भ बजट system prompt / टूल schema / बातचीत इतिहास में कैसे बँटा है, और LLM कैश हिट दर दिखती है। यह पूर्णतः केवल-पठन है: `session/created`, `session/event` और `session/disposed` सुनता है, हर घटना को O(1) में fold करता है, स्नैपशॉट टाइमर पर लेता है, और मॉडल अनुरोध या टूल परिणाम के किसी waterfall में कभी नहीं घुसता। मेट्रिक्स `dsh_fast` स्टोरेज डोमेन (प्रति सत्र एक सीमित इतिहास) में जाते हैं, सत्र लॉग में नहीं; रिपोर्ट की पहचान और वैकल्पिक कार्य निर्देशिका दिखाने से पहले सैनिटाइज़ की जाती हैं।
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
@@ -46,7 +48,6 @@ dsh plugin --profile <name> add dsh-fast
 ![dsh-fast का असली टर्मिनल रन](docs/assets/dsh-fast-demo.gif)
 
 *इस रिपॉज़िटरी में दर्ज असली रन का एनिमेटेड रीप्ले।*
-
 
 ## तीन चरणों में शुरुआत
 

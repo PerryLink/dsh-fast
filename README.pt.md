@@ -11,6 +11,8 @@
 
 Diagnóstico de desempenho somente leitura para DeepSeek Harness: observa o fluxo de eventos da sessão, nunca o caminho quente do modelo, e detalha carga da sessão, spill, compactação, injeção de contexto e custo do cache LLM.
 
+Última verificação: DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [Instalar](#instalação-em-três-passos) · [Configuração](#configuração) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -36,7 +38,7 @@ dsh plugin --profile <name> add dsh-fast
 
 ## O que é
 
-`dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` é um check-up de uma sessão do DeepSeek Harness: um único `/fast` mostra o tempo de carga da sessão, quantos resultados de ferramenta foram derramados (spill), quantas compactações dispararam, como o orçamento de contexto se divide entre system prompt / schema de ferramentas / histórico da conversa e a taxa de acertos do cache LLM. É estritamente somente leitura: escuta `session/created`, `session/event` e `session/disposed`, dobra cada evento em O(1), amostra snapshots em um timer e nunca entra no waterfall da requisição do modelo nem dos resultados de ferramentas. As métricas são gravadas no domínio de armazenamento `dsh_fast` (um histórico limitado por sessão), não no log da sessão; a identidade do relatório e o diretório de trabalho opcional são saneados antes de exibir.
+, `dsh-fast` é um check-up de uma sessão do DeepSeek Harness: um único `/fast` mostra o tempo de carga da sessão, quantos resultados de ferramenta foram derramados (spill), quantas compactações dispararam, como o orçamento de contexto se divide entre system prompt / schema de ferramentas / histórico da conversa e a taxa de acertos do cache LLM. É estritamente somente leitura: escuta `session/created`, `session/event` e `session/disposed`, dobra cada evento em O(1), amostra snapshots em um timer e nunca entra no waterfall da requisição do modelo nem dos resultados de ferramentas. As métricas são gravadas no domínio de armazenamento `dsh_fast` (um histórico limitado por sessão), não no log da sessão; a identidade do relatório e o diretório de trabalho opcional são saneados antes de exibir.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
@@ -46,7 +48,6 @@ dsh plugin --profile <name> add dsh-fast
 ![dsh-fast: execução real de terminal](docs/assets/dsh-fast-demo.gif)
 
 *Repetição animada de uma execução real registrada neste repositório.*
-
 
 ## Instalação em três passos
 

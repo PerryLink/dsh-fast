@@ -16,7 +16,6 @@ import type { ResolvedConfig } from './config.ts'
 import {
   classifySystemSections,
   estimateLegacySystemTokens,
-  estimateSystemTokens,
   estimateToolsTokens,
   type SystemSection,
 } from './estimate.ts'
@@ -41,23 +40,54 @@ export type MeasureFn = (session: Session) => TokenMeasurement | undefined
 const SPILL_NOTICE_MARKERS = ['Full', 'stored at:'] as const
 
 /**
- * The effective system prompt: the last non-empty `system/message` node in
- * surface order. 0.1.5-alpha.1 derives the prompt from surface node 0; an empty
- * node is dormant and never restores older text. Mirrors
- * `SystemPromptProjection` in the host agent loop.
+ * The effective system prompt as durable sections. Host releases from
+ * `0.2.3-alpha.1` on append `system/message` events that carry section
+ * updates rather than complete prompts, so consumers must accumulate them: a
+ * replacement event (an object `surfaceOp`) rebuilds the assembly from its own
+ * sections, while an appended event applies only the sections it names (active
+ * sets, retired removes; the latest registration per name wins). Events without
+ * `source.sections` are legacy complete prompts that replace the assembly; the
+ * next sectioned event supersedes them.
  * @param surfaceEvents - the current surface events in model-history order
  *   (from the optional `sessionQuery` service, or {@link surfaceEventsOf}).
- * @returns the effective system message, or undefined when none is active.
+ * @returns the ordered live sections and their concatenated text, or undefined
+ *   when no active system prompt remains.
  */
-export function effectiveSystemMessage(surfaceEvents: readonly SessionEvent[]): SystemMessage | undefined {
-  let effective: SystemMessage | undefined
+export function effectiveSystemSections(surfaceEvents: readonly SessionEvent[]): { sections: SystemSection[]; text: string } | undefined {
+  const live = new Map<string, { name: string; text: string; order: number }>()
+  let legacy: string | undefined
   for (const event of surfaceEvents) {
     if (event.type !== 'system/message') continue
     const message = event.data.message
-    if (message.content.length === 0) continue
-    effective = message
+    const sourceSections = (message.source as unknown as { sections?: unknown }).sections
+    if (!Array.isArray(sourceSections)) {
+      const text = systemTextOf(message)
+      // An empty legacy node is dormant: it neither overwrites nor restores.
+      if (text.length === 0) continue
+      legacy = text
+      live.clear()
+      continue
+    }
+    const surfaceOp = (event as unknown as { surfaceOp?: unknown }).surfaceOp
+    if (typeof surfaceOp === 'object' && surfaceOp !== null) live.clear()
+    legacy = undefined
+    for (const raw of sourceSections as readonly { name?: unknown; state?: unknown; order?: unknown; contentIndex?: unknown }[]) {
+      if (typeof raw.name !== 'string') continue
+      if (raw.state === 'retired') { live.delete(raw.name); continue }
+      if (raw.state !== 'active') continue
+      const index = typeof raw.contentIndex === 'number' ? raw.contentIndex : -1
+      const block = index >= 0 ? message.content[index] : undefined
+      const text = block === undefined ? '' : block.type === 'text' ? block.text : JSON.stringify(block)
+      const order = typeof raw.order === 'number' ? raw.order : 0
+      live.set(raw.name, { name: raw.name, text, order })
+    }
   }
-  return effective
+  const ordered = [...live.values()].sort((a, b) => a.order - b.order || a.name.localeCompare(b.name))
+  if (ordered.length === 0) {
+    return legacy === undefined ? undefined : { sections: [{ name: 'other', text: legacy }], text: legacy }
+  }
+  const sections: SystemSection[] = ordered.map(({ name, text }) => ({ name, text }))
+  return { sections, text: sections.map((section) => section.text).join('\n') }
 }
 
 /**
@@ -279,24 +309,26 @@ export class FastCollector {
     const state = this.live.get(session)
     if (state === undefined) return emptySnapshot()
     const measurement = measure === undefined ? undefined : measure(session)
-    const systemMessage = effectiveSystemMessage(surfaceEvents ?? surfaceEventsOf(session))
-    const legacySystem = systemMessage === undefined ? legacySystemText(state.lastHeader) : undefined
-    const systemTokens = systemMessage === undefined
+    const effective = effectiveSystemSections(surfaceEvents ?? surfaceEventsOf(session))
+    const legacySystem = effective === undefined ? legacySystemText(state.lastHeader) : undefined
+    const systemTokens = effective === undefined
       ? estimateLegacySystemTokens(legacySystem)
-      : estimateSystemTokens(systemMessage)
+      : estimateLegacySystemTokens(effective.text)
     const toolSchemaTokens = estimateToolsTokens(state.lastHeader)
     const measuredSurfaceTokens = measurement?.surfaceTokens ?? 0
     // 0.1.5-alpha.1 prices the system prompt into the meter's surface (surface
     // node 0), so subtract it and keep the surface bucket conversation history.
     // The legacy line kept `header.system` out of the meter surface entirely.
-    const surfaceTokens = systemMessage === undefined
+    const surfaceTokens = effective === undefined
       ? measuredSurfaceTokens
       : Math.max(0, measuredSurfaceTokens - systemTokens)
     const totalTokens = measurement?.totalTokens ?? (systemTokens + toolSchemaTokens + surfaceTokens)
-    const systemText = systemMessage === undefined ? legacySystem : systemTextOf(systemMessage)
-    const syntheticSections: readonly SystemSection[] = systemText === undefined || systemText.length === 0
-      ? []
-      : [{ name: 'other', text: systemText }]
+    const systemText = effective === undefined ? legacySystem : effective.text
+    const syntheticSections: readonly SystemSection[] = effective !== undefined && effective.sections.length > 0
+      ? effective.sections
+      : systemText === undefined || systemText.length === 0
+        ? []
+        : [{ name: 'other', text: systemText }]
     const systemBreakdown = classifySystemSections(sections ?? syntheticSections)
     return {
       load: {

@@ -15,6 +15,7 @@ import { CallId } from './call-id.ts'
 import {
   FastCollector,
   detectSpilledResult,
+  effectiveSystemSections,
   flattenToolResultText,
   hitRateOf,
   sharesOf,
@@ -188,6 +189,43 @@ describe('collector system-prompt accounting', () => {
     const snapshot = collector.snapshot(session, () => ({ totalTokens: 500, surfaceTokens: 300 }))
     expect(snapshot.context.systemTokens).toBe(Math.ceil(SYSTEM_TEXT.length / 4) + 4)
     expect(snapshot.context.surfaceTokens).toBe(300 - snapshot.context.systemTokens)
+  })
+
+  it('accumulates section updates instead of pricing only the last system node', () => {
+    // 0.2.3-alpha.1 appends section updates rather than complete prompts: the
+    // effective prompt is the accumulated assembly, not the last event alone.
+    const event = (seq: number, text: string, sections: unknown[], surfaceOp?: unknown): SessionEvent => ({
+      type: 'system/message',
+      seq,
+      time: 0,
+      data: {
+        turn: 1,
+        step: seq,
+        message: {
+          id: 'm' + seq,
+          role: 'system',
+          content: [{ type: 'text', text }],
+          source: { kind: 'system-prompt', sections },
+        },
+      },
+      ...(surfaceOp === undefined ? {} : { surfaceOp }),
+    }) as unknown as SessionEvent
+    const events = [
+      event(1, 'You are a careful assistant.', [{ name: 'deployment:persona', state: 'active', order: 0, contentIndex: 0 }]),
+      event(2, 'Follow the AGENTS.md rules.', [{ name: 'agent:instructions', state: 'active', order: 1, contentIndex: 0 }]),
+      event(3, 'retired notice', [{ name: 'agent:instructions', state: 'retired', noticeIndex: [0] }]),
+      event(4, 'Persona v2.', [{ name: 'deployment:persona', state: 'active', order: 0, contentIndex: 0 }]),
+    ]
+    const effective = effectiveSystemSections(events)
+    expect(effective?.sections.map(section => section.name)).toEqual(['deployment:persona'])
+    expect(effective?.text).toBe('Persona v2.')
+    // A replacement frame rebuilds the assembly from its own sections.
+    const replaced = effectiveSystemSections([
+      ...events,
+      event(5, 'Only this section.', [{ name: 'other:only', state: 'active', order: 0, contentIndex: 0 }], { op: 'replace', startSeq: 1, endSeq: 4 }),
+    ])
+    expect(replaced?.sections.map(section => section.name)).toEqual(['other:only'])
+    expect(replaced?.text).toBe('Only this section.')
   })
 
   it('falls back to the legacy header.system string when no system node exists', () => {

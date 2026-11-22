@@ -11,6 +11,8 @@
 
 面向 DeepSeek Harness 的只读性能诊断插件：只观察会话事件流，不碰模型热路径，把会话加载、spill、compaction、上下文注入与 LLM 缓存的开销拆开给你看。
 
+最近一次核验：DeepSeek Harness `dsh-v0.2.3-alpha.1`（2026-11-22）。
+
 [安装](#三步上手) · [配置](#配置) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -40,7 +42,7 @@ dsh plugin --profile <name> add dsh-fast
 
 *本仓库一次真实运行的动图回放。*
 
-`dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` 是给 DeepSeek Harness 会话做的一次体检：一条 `/fast` 就能看到这次会话的加载耗时、有多少工具结果被 spill、compaction 触发了几次、上下文预算被系统提示词 / 工具 schema / 对话历史各吃掉多少，以及 LLM 缓存命中率。它严格只读：监听 `session/created`、`session/event`、`session/disposed`，每个事件做 O(1) 折叠，快照在定时器上采样，绝不进入模型请求或工具结果的任何 waterfall。度量写入 `dsh_fast` 存储域（每会话一段有界历史），不写会话日志；报告里的会话标识与可选工作目录在展示前已脱敏。
+, `dsh-fast` 是给 DeepSeek Harness 会话做的一次体检：一条 `/fast` 就能看到这次会话的加载耗时、有多少工具结果被 spill、compaction 触发了几次、上下文预算被系统提示词 / 工具 schema / 对话历史各吃掉多少，以及 LLM 缓存命中率。它严格只读：监听 `session/created`、`session/event`、`session/disposed`，每个事件做 O(1) 折叠，快照在定时器上采样，绝不进入模型请求或工具结果的任何 waterfall。度量写入 `dsh_fast` 存储域（每会话一段有界历史），不写会话日志；报告里的会话标识与可选工作目录在展示前已脱敏。
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">

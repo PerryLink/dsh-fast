@@ -11,6 +11,8 @@
 
 Read-only performance diagnostics for DeepSeek Harness: it watches the session event stream, never the model hot path, and breaks down session load, spill, compaction, context injection, and LLM cache cost.
 
+Last verified on DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [Install](#three-step-setup) · [Configuration](#configuration) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -36,7 +38,7 @@ dsh plugin --profile <name> add dsh-fast
 
 ## What it is
 
-`dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` is a health check for a DeepSeek Harness session: one `/fast` shows the session-load time, how many tool results were spilled, how many compactions fired, how the context budget is split across system prompt / tool schema / conversation history, and the LLM cache hit rate. It is strictly read-only: it listens on `session/created`, `session/event`, and `session/disposed`, folds every event in O(1), samples snapshots on a timer, and never enters any model-request or tool-result waterfall. Metrics are written to the `dsh_fast` storage domain (one bounded history per session), not to the session log; the report identity and the optional working directory are sanitized before display.
+, `dsh-fast` is a health check for a DeepSeek Harness session: one `/fast` shows the session-load time, how many tool results were spilled, how many compactions fired, how the context budget is split across system prompt / tool schema / conversation history, and the LLM cache hit rate. It is strictly read-only: it listens on `session/created`, `session/event`, and `session/disposed`, folds every event in O(1), samples snapshots on a timer, and never enters any model-request or tool-result waterfall. Metrics are written to the `dsh_fast` storage domain (one bounded history per session), not to the session log; the report identity and the optional working directory are sanitized before display.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">

@@ -11,6 +11,8 @@
 
 Diagnóstico de rendimiento de solo lectura para DeepSeek Harness: observa el flujo de eventos de sesión, nunca la ruta caliente del modelo, y desglosa carga de sesión, spill, compactación, inyección de contexto y coste de la caché LLM.
 
+Última verificación: DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [Instalar](#instalación-en-tres-pasos) · [Configuración](#configuración) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -36,7 +38,7 @@ dsh plugin --profile <name> add dsh-fast
 
 ## Qué es
 
-`dsh-v0.2.2-rc.4`（2026-11-18）；`dsh-fast` es un chequeo de salud de una sesión de DeepSeek Harness: un solo `/fast` muestra el tiempo de carga de la sesión, cuántos resultados de herramienta se derramaron (spill), cuántas compactaciones se dispararon, cómo se reparte el presupuesto de contexto entre system prompt / schema de herramientas / historial de conversación, y la tasa de aciertos de la caché LLM. Es estrictamente de solo lectura: escucha `session/created`, `session/event` y `session/disposed`, pliega cada evento en O(1), muestrea instantáneas en un temporizador y nunca entra en el waterfall de la petición del modelo ni de los resultados de herramientas. Las métricas se escriben en el dominio de almacenamiento `dsh_fast` (una historia acotada por sesión), no en el log de sesión; la identidad del informe y el directorio de trabajo opcional se sanean antes de mostrarse.
+, `dsh-fast` es un chequeo de salud de una sesión de DeepSeek Harness: un solo `/fast` muestra el tiempo de carga de la sesión, cuántos resultados de herramienta se derramaron (spill), cuántas compactaciones se dispararon, cómo se reparte el presupuesto de contexto entre system prompt / schema de herramientas / historial de conversación, y la tasa de aciertos de la caché LLM. Es estrictamente de solo lectura: escucha `session/created`, `session/event` y `session/disposed`, pliega cada evento en O(1), muestrea instantáneas en un temporizador y nunca entra en el waterfall de la petición del modelo ni de los resultados de herramientas. Las métricas se escriben en el dominio de almacenamiento `dsh_fast` (una historia acotada por sesión), no en el log de sesión; la identidad del informe y el directorio de trabajo opcional se sanean antes de mostrarse.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-fast-flow-v5-dark.svg">
@@ -46,7 +48,6 @@ dsh plugin --profile <name> add dsh-fast
 ![dsh-fast: ejecución real de terminal](docs/assets/dsh-fast-demo.gif)
 
 *Repetición animada de una ejecución real registrada en este repositorio.*
-
 
 ## Instalación en tres pasos
 
