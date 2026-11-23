@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Fast",
+    "description": "See where a session actually slowed down—latency, context budget, and cache hit rate on one screen."
+  }
+}

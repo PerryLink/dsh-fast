@@ -7,6 +7,8 @@
 
 # dsh-fast
 
+Current version `0.2.31`.
+
 **See where a session actually slowed down—latency, context budget, and cache hit rate on one screen.**
 
 Read-only performance diagnostics for DeepSeek Harness: it watches the session event stream, never the model hot path, and breaks down session load, spill, compaction, context injection, and LLM cache cost.

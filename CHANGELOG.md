@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.2.31] - 2026-11-22
+
+### Changed
+
+- Marketplace display metadata: icon, localized title/description, author.
+
 ## [0.2.30] - 2026-11-22
 
 - Fix: accumulate `system/message` section updates when pricing the system prompt. Host 0.2.3-alpha.1 appends section deltas instead of complete prompts, so the previous last-non-empty-node read undercounted system tokens; legacy complete-prompt and dormant-empty-node behaviour is unchanged.

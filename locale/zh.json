@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "性能诊断",
+    "description": "面向 DeepSeek Harness 的只读性能诊断插件：只观察会话事件流，不碰模型热路径，把会话加载、spill、compaction、上下文注入与 LLM 缓存的开销拆开给你看。"
+  }
+}
