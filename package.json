@@ -1,6 +1,6 @@
 {
   "name": "dsh-fast",
-  "version": "0.2.31",
+  "version": "0.2.32",
   "description": "Read-only performance diagnostics for DeepSeek Harness: session load (open/restore) timing, spill-hit counts, compaction count and trigger, context-injection volume (AGENTS.md/skills/tool-schema token share), and LLM cache hit rate — surfaced via the /fast command and the fast_report tool, persisted as reconstructable fast/* session events with async sampling off the model path.",
   "author": "dsh-fast contributors",
   "repository": {
@@ -113,7 +113,7 @@
   ],
   "engines": {
     "node": "^22.19.0 || >=24.0.0",
-    "dsh": ">=0.1.2-rc.1 <0.2.0 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-0 <0.2.0 || >=0.1.7-0 <0.2.0 || >=0.2.0-0 <0.3.0 || >=0.2.1-0 <0.3.0 || >=0.2.2-0 <0.3.0 || >=0.2.3-0 <0.3.0-0"
+    "dsh": ">=0.2.0-0 <0.4.0-0"
   },
   "packageManager": "pnpm@11.7.0",
   "peerDependencies": {
