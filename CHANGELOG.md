@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.2.33] - 2026-11-26
+
+### Fixed
+
+- **The repository constant and the published artifact both carried the previous version.** dsh-fast has no version tripwire, so `src/version.ts` had stayed at 0.2.31 while `package.json` moved to 0.2.32, and the published 0.2.32 tarball shipped `VERSION` 0.2.31 in `lib/index.js`, `lib/types/version.js` and `src/version.ts`. `src/version.ts` is synced and `prepare` rebuilds `lib/` during publish, so every copy of the constant reads 0.2.33. No behaviour change.
+
 ## [0.2.31] - 2026-11-22
 
 ### Changed
